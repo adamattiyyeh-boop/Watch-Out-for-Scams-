@@ -26,7 +26,7 @@
       color:var(--ink);
     }
     .card{
-      width:min(580px, 92vw);
+      width:min(600px, 92vw);
       padding:28px 24px;
       border-radius:24px;
       background:var(--card);
@@ -49,7 +49,7 @@
 
     .playground{
       position:relative;
-      height:270px;
+      height:285px;
       border-radius:18px;
       background: rgba(255,255,255,.55);
       border: 1px solid rgba(0,0,0,.06);
@@ -68,6 +68,7 @@
       user-select:none;
       -webkit-tap-highlight-color: transparent;
       letter-spacing:.2px;
+      white-space:nowrap;
     }
     .btn:active{ transform: scale(.98); }
 
@@ -78,33 +79,71 @@
     }
     #yes:hover{ filter: brightness(1.03); }
 
-    /* Horse GIF wrapper */
-    #horse{
-      position:absolute;
-      left:50%;
-      top:50%;
-      transform: translate(-50%, -50%) scaleX(1);
-      user-select:none;
-      pointer-events:none;
-      will-change: left, top, transform, opacity;
-      filter: drop-shadow(0 10px 18px rgba(0,0,0,.15));
-    }
-    /* The GIF itself (edit size here if you want bigger/smaller) */
-    #horse img{
-      width: 74px;
-      height: auto;
-      display:block;
-    }
-
+    /* Rope SVG */
     #rope{
       position:absolute;
-      left:0;
-      top:0;
+      inset:0;
       width:100%;
       height:100%;
       pointer-events:none;
     }
 
+    /* Horse */
+    #horse{
+      position:absolute;
+      left:50%;
+      top:50%;
+      transform: translate(-50%, -50%);
+      user-select:none;
+      pointer-events:none;
+      will-change: left, top, transform, opacity;
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,.15));
+    }
+    .horseWrap{
+      position:relative;
+      display:block;
+      animation: gallopBob 220ms infinite alternate ease-in-out;
+    }
+    #horse img{
+      width: 130px; /* bigger horse */
+      height:auto;
+      display:block;
+    }
+
+    /* Fake running legs overlay */
+    .legs{
+      position:absolute;
+      left: 18%;
+      right: 10%;
+      bottom: -8px;
+      height: 30px;
+      pointer-events:none;
+      opacity: 0.75;
+      filter: blur(0.2px);
+    }
+    .leg{
+      position:absolute;
+      width: 11px;
+      height: 26px;
+      background: rgba(0,0,0,.35);
+      border-radius: 999px;
+      transform-origin: top center;
+    }
+    .leg.l1{ left: 8%;  animation: legKick 140ms infinite alternate; }
+    .leg.l2{ left: 28%; animation: legKick 140ms infinite alternate-reverse; }
+    .leg.l3{ left: 58%; animation: legKick 140ms infinite alternate; }
+    .leg.l4{ left: 78%; animation: legKick 140ms infinite alternate-reverse; }
+
+    @keyframes gallopBob{
+      from { transform: translateY(0px) rotate(-1deg); }
+      to   { transform: translateY(4px) rotate(1deg); }
+    }
+    @keyframes legKick{
+      from { transform: rotate(18deg) translateY(0px); }
+      to   { transform: rotate(-22deg) translateY(2px); }
+    }
+
+    /* The "No" button */
     #no{
       position:absolute;
       left: 65%;
@@ -119,10 +158,7 @@
       align-items:center;
       gap:8px;
     }
-    #no .tag{
-      font-size:18px;
-      line-height:1;
-    }
+    #no .tag{ font-size:18px; line-height:1; }
 
     /* Dust particles */
     .dustLayer{
@@ -180,7 +216,7 @@
     }
     @keyframes floatUp{
       to{
-        transform: translateY(-460px) rotate(18deg);
+        transform: translateY(-500px) rotate(18deg);
         opacity:0;
       }
     }
@@ -198,7 +234,7 @@
     .final.show{ display:grid; }
 
     .finalCard{
-      width:min(540px, 92vw);
+      width:min(560px, 92vw);
       border-radius:22px;
       background: rgba(255,255,255,.78);
       border: 1px solid rgba(0,0,0,.06);
@@ -216,7 +252,6 @@
       line-height:1.35;
       font-size:16px;
     }
-
     .catWrap{
       display:grid;
       place-items:center;
@@ -228,7 +263,6 @@
       border: 1px solid rgba(0,0,0,.08);
       box-shadow: 0 14px 30px rgba(0,0,0,.12);
     }
-
     .pillRow{
       display:flex;
       gap:10px;
@@ -275,7 +309,15 @@
 
       <!-- Put horse.gif in the same folder as this HTML -->
       <div id="horse" aria-hidden="true">
-        <img src="horse.gif" alt="Running horse"/>
+        <div class="horseWrap">
+          <img src="horse.gif" alt="Running horse"/>
+          <div class="legs" aria-hidden="true">
+            <span class="leg l1"></span>
+            <span class="leg l2"></span>
+            <span class="leg l3"></span>
+            <span class="leg l4"></span>
+          </div>
+        </div>
       </div>
 
       <button class="btn" id="no" type="button">
@@ -297,7 +339,7 @@
 
         <div class="catWrap">
           <img class="catGif" alt="Dancing cat gif"
-            src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" />
+               src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" />
         </div>
 
         <div class="pillRow">
@@ -326,7 +368,7 @@
 
     let accepted = false;
 
-    // Horse motion state
+    // Horse motion state (normalized 0..1 within playground)
     let horseX = 0.5, horseY = 0.5;
     let horseVX = (Math.random() < 0.5 ? -1 : 1) * 0.0028;
     let horseVY = (Math.random() < 0.5 ? -1 : 1) * 0.0023;
@@ -337,7 +379,6 @@
 
     function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
     function lerp(a,b,t){ return a + (b-a)*t; }
-
     function areaRect(){ return playground.getBoundingClientRect(); }
 
     function setElNormPosition(el, xN, yN){
@@ -383,7 +424,6 @@
     function spawnDust(intensity = 1){
       const r = areaRect();
       const hb = horse.getBoundingClientRect();
-
       const x = (hb.left + hb.width*0.25) - r.left;
       const y = (hb.top + hb.height*0.80) - r.top;
       const count = Math.round(1 + intensity);
@@ -400,7 +440,7 @@
       }
     }
 
-    // Neigh sound (no audio file needed)
+    // Neigh sound (no audio file)
     let audioCtx = null;
     function neigh(){
       try{
@@ -429,12 +469,10 @@
       const dirX = horseVX / vMag;
       const dirY = horseVY / vMag;
 
-      // anchor behind horse
-      const rearOffset = 7.5; // bigger = more "behind"
+      const rearOffset = 7.8;
       const hx = h.x - dirX * rearOffset;
       const hy = h.y - dirY * rearOffset;
 
-      // droop
       const midX = (hx + n.x) / 2;
       const midY = (hy + n.y) / 2 + 11;
 
@@ -481,12 +519,15 @@
       horseVX = clamp(horseVX, -0.0075, 0.0075);
       horseVY = clamp(horseVY, -0.0075, 0.0075);
 
+      const vMag = Math.hypot(horseVX, horseVY) || 0.001;
       const facing = horseVX >= 0 ? 1 : -1;
-      horse.style.transform = `translate(-50%, -50%) scaleX(${facing})`;
+
+      // lean forward a bit when fast
+      const lean = (speedBoost > 1.6) ? (facing * 6) : 0;
+      horse.style.transform = `translate(-50%, -50%) scaleX(${facing}) rotate(${lean}deg)`;
 
       setElNormPosition(horse, horseX, horseY);
 
-      const vMag = Math.hypot(horseVX, horseVY) || 0.001;
       const dirX = horseVX / vMag;
       const dirY = horseVY / vMag;
 
