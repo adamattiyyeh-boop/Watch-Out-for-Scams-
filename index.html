@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Valentine for Dema</title>
+  <style>
+    :root{
+      --bg1:#ffdee9;
+      --bg2:#b5fffc;
+      --card:#ffffffcc;
+      --shadow: 0 20px 60px rgba(0,0,0,.15);
+      --yes:#ff4d6d;
+      --no:#6c757d;
+      --ink:#151515;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(circle at top, var(--bg1), var(--bg2));
+      overflow:hidden;
+      color:var(--ink);
+    }
+    .card{
+      width:min(560px, 92vw);
+      padding:28px 24px;
+      border-radius:24px;
+      background:var(--card);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+      text-align:center;
+      position:relative;
+      overflow:hidden;
+    }
+    h1{
+      margin:0 0 8px;
+      font-size: clamp(24px, 4vw, 38px);
+      letter-spacing:-.02em;
+    }
+    p{
+      margin:0 0 18px;
+      opacity:.85;
+      font-size: 16px;
+    }
+
+    .playground{
+      position:relative;
+      height:240px;
+      border-radius:18px;
+      background: rgba(255,255,255,.55);
+      border: 1px solid rgba(0,0,0,.06);
+      overflow:hidden;
+      margin-top:14px;
+    }
+
+    .btn{
+      border:none;
+      padding:14px 18px;
+      border-radius:999px;
+      font-size:16px;
+      font-weight:800;
+      cursor:pointer;
+      transition: transform .08s ease, filter .15s ease;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+      letter-spacing:.2px;
+    }
+    .btn:active{ transform: scale(.98); }
+
+    #yes{
+      background: var(--yes);
+      color:white;
+      box-shadow: 0 12px 25px rgba(255, 77, 109, .35);
+    }
+    #yes:hover{ filter: brightness(1.03); }
+
+    #no{
+      position:absolute;
+      left: 65%;
+      top: 55%;
+      transform: translate(-50%, -50%);
+      background: var(--no);
+      color:white;
+      box-shadow: 0 12px 25px rgba(108, 117, 125, .25);
+      touch-action: manipulation;
+      will-change: left, top;
+    }
+
+    .row{
+      display:flex;
+      gap:12px;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+
+    .result{
+      margin-top:14px;
+      font-weight:800;
+      font-size:18px;
+      min-height: 26px;
+    }
+
+    /* Hearts */
+    .hearts{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      overflow:hidden;
+      border-radius:24px;
+    }
+    .heart{
+      position:absolute;
+      bottom:-30px;
+      font-size:18px;
+      animation: floatUp linear forwards;
+      opacity:.95;
+      filter: drop-shadow(0 6px 10px rgba(0,0,0,.12));
+    }
+    @keyframes floatUp{
+      to{
+        transform: translateY(-420px) rotate(18deg);
+        opacity:0;
+      }
+    }
+
+    /* Final screen */
+    .final{
+      position:absolute;
+      inset:0;
+      display:none;
+      place-items:center;
+      padding:26px;
+      background: radial-gradient(circle at top, rgba(255,255,255,.75), rgba(255,255,255,.55));
+      backdrop-filter: blur(10px);
+    }
+    .final.show{ display:grid; }
+
+    .finalCard{
+      width:min(520px, 92vw);
+      border-radius:22px;
+      background: rgba(255,255,255,.72);
+      border: 1px solid rgba(0,0,0,.06);
+      box-shadow: var(--shadow);
+      padding:22px 18px;
+    }
+    .finalTitle{
+      font-size: clamp(22px, 4vw, 34px);
+      margin:0 0 8px;
+      letter-spacing:-.02em;
+    }
+    .finalMsg{
+      margin:0 0 14px;
+      opacity:.9;
+      line-height:1.35;
+      font-size:16px;
+    }
+    .pillRow{
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin-top:14px;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 14px;
+      border-radius:999px;
+      font-weight:800;
+      border: 1px solid rgba(0,0,0,.08);
+      background: rgba(255,255,255,.7);
+      cursor:pointer;
+    }
+    .pill:active{ transform: scale(.98); }
+    .tiny{
+      font-size:12px;
+      opacity:.7;
+      margin-top:10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card" id="card">
+    <div class="hearts" id="hearts"></div>
+
+    <h1>Will you be my Valentine, Dema? 💘</h1>
+    <p>Say yes before “No” escapes the planet 😭</p>
+
+    <div class="playground" id="playground" aria-label="button area">
+      <div class="row" style="position:absolute; inset:auto 0 18px 0;">
+        <button class="btn" id="yes" type="button">Yes 💞</button>
+      </div>
+
+      <button class="btn" id="no" type="button">No 🙅‍♀️</button>
+    </div>
+
+    <div class="result" id="result"></div>
+
+    <!-- Final overlay -->
+    <div class="final" id="final">
+      <div class="finalCard">
+        <h2 class="finalTitle">YAYYY DEMAAAAA 🥰💖</h2>
+        <p class="finalMsg">
+          Officially my Valentine now. <br/>
+          I’m bringing the snacks, the vibes, and the “I’m never letting you go” energy 😌
+        </p>
+
+        <div class="pillRow">
+          <button class="pill" id="moreHearts" type="button">💘 More hearts</button>
+          <button class="pill" id="reset" type="button">🔁 Do it again</button>
+        </div>
+
+        <div class="tiny">P.S. “No” tried to run… and failed.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const playground = document.getElementById('playground');
+    const noBtn = document.getElementById('no');
+    const yesBtn = document.getElementById('yes');
+    const result = document.getElementById('result');
+    const heartsLayer = document.getElementById('hearts');
+    const finalScreen = document.getElementById('final');
+    const moreHeartsBtn = document.getElementById('moreHearts');
+    const resetBtn = document.getElementById('reset');
+
+    // Drift settings
+    let driftVX = (Math.random() < 0.5 ? -1 : 1) * (0.35 + Math.random() * 0.35);
+    let driftVY = (Math.random() < 0.5 ? -1 : 1) * (0.35 + Math.random() * 0.35);
+    let driftTimer = null;
+    let accepted = false;
+
+    function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
+
+    function getArea(){
+      return playground.getBoundingClientRect();
+    }
+
+    function placeNoButtonViewport(x, y){
+      const area = getArea();
+      const btn = noBtn.getBoundingClientRect();
+
+      const localX = x - area.left;
+      const localY = y - area.top;
+
+      const pad = 10;
+      const minX = pad + btn.width/2;
+      const maxX = area.width - pad - btn.width/2;
+      const minY = pad + btn.height/2;
+      const maxY = area.height - pad - btn.height/2;
+
+      const nx = clamp(localX, minX, maxX);
+      const ny = clamp(localY, minY, maxY);
+
+      noBtn.style.left = nx + 'px';
+      noBtn.style.top  = ny + 'px';
+    }
+
+    function getNoCenterViewport(){
+      const r = noBtn.getBoundingClientRect();
+      return { x: r.left + r.width/2, y: r.top + r.height/2, w: r.width, h: r.height };
+    }
+
+    function moveNoAwayFrom(pointerX, pointerY){
+      if (accepted) return;
+
+      const c = getNoCenterViewport();
+      const dx = c.x - pointerX;
+      const dy = c.y - pointerY;
+
+      const mag = Math.hypot(dx, dy) || 1;
+      const ux = dx / mag;
+      const uy = dy / mag;
+
+      const jump = 140 + Math.random() * 140;
+
+      const targetX = c.x + ux * jump + (Math.random() - 0.5) * 70;
+      const targetY = c.y + uy * jump + (Math.random() - 0.5) * 70;
+
+      // After a dodge, slightly randomize drift direction so it feels alive
+      driftVX += (Math.random() - 0.5) * 0.35;
+      driftVY += (Math.random() - 0.5) * 0.35;
+
+      // cap drift speeds
+      driftVX = clamp(driftVX, -1.2, 1.2);
+      driftVY = clamp(driftVY, -1.2, 1.2);
+
+      placeNoButtonViewport(targetX, targetY);
+    }
+
+    function startDrift(){
+      stopDrift();
+      driftTimer = setInterval(() => {
+        if (accepted) return;
+
+        const area = getArea();
+        const c = getNoCenterViewport();
+
+        // current center in viewport coords
+        let nx = c.x + driftVX;
+        let ny = c.y + driftVY;
+
+        // Bounce off playground edges
+        const leftEdge   = area.left + 10 + c.w/2;
+        const rightEdge  = area.right - 10 - c.w/2;
+        const topEdge    = area.top + 10 + c.h/2;
+        const bottomEdge = area.bottom - 10 - c.h/2;
+
+        if (nx <= leftEdge || nx >= rightEdge) {
+          driftVX *= -1;
+          nx = clamp(nx, leftEdge, rightEdge);
+        }
+        if (ny <= topEdge || ny >= bottomEdge) {
+          driftVY *= -1;
+          ny = clamp(ny, topEdge, bottomEdge);
+        }
+
+        // Tiny random wobble to avoid perfect patterns
+        if (Math.random() < 0.04) {
+          driftVX += (Math.random() - 0.5) * 0.25;
+          driftVY += (Math.random() - 0.5) * 0.25;
+          driftVX = clamp(driftVX, -1.2, 1.2);
+          driftVY = clamp(driftVY, -1.2, 1.2);
+        }
+
+        placeNoButtonViewport(nx, ny);
+      }, 16); // ~60fps
+    }
+
+    function stopDrift(){
+      if (driftTimer) clearInterval(driftTimer);
+      driftTimer = null;
+    }
+
+    function spawnHearts(count=18){
+      const area = heartsLayer.getBoundingClientRect();
+      for(let i=0;i<count;i++){
+        const s = document.createElement('div');
+        s.className = 'heart';
+        s.textContent = Math.random() < .33 ? '💖' : (Math.random() < .5 ? '💘' : '💕');
+        s.style.left = (Math.random() * area.width) + 'px';
+        s.style.animationDuration = (1.6 + Math.random()*1.4) + 's';
+        s.style.fontSize = (16 + Math.random()*22) + 'px';
+        heartsLayer.appendChild(s);
+        setTimeout(()=>s.remove(), 3200);
+      }
+    }
+
+    // Init position & drift
+    (function init(){
+      const area = getArea();
+      placeNoButtonViewport(area.left + area.width * 0.65, area.top + area.height * 0.55);
+      startDrift();
+    })();
+
+    // Desktop: dodge when mouse is close
+    document.addEventListener('mousemove', (e) => {
+      if (accepted) return;
+
+      const area = getArea();
+      const inside =
+        e.clientX >= area.left && e.clientX <= area.right &&
+        e.clientY >= area.top  && e.clientY <= area.bottom;
+
+      if (!inside) return;
+
+      const c = getNoCenterViewport();
+      const dist = Math.hypot(e.clientX - c.x, e.clientY - c.y);
+
+      if (dist < 135) {
+        moveNoAwayFrom(e.clientX, e.clientY);
+      }
+    });
+
+    // Mobile: dodge taps
+    noBtn.addEventListener('touchstart', (e) => {
+      if (accepted) return;
+      const t = e.touches[0];
+      moveNoAwayFrom(t.clientX, t.clientY);
+      e.preventDefault();
+    }, { passive: false });
+
+    // Also dodge clicks
+    noBtn.addEventListener('click', (e) => {
+      if (accepted) return;
+      moveNoAwayFrom(e.clientX, e.clientY);
+      e.preventDefault();
+      e.stopPropagation();
+    });
+
+    // YES behavior -> final screen
+    yesBtn.addEventListener('click', () => {
+      if (accepted) return;
+      accepted = true;
+
+      result.textContent = "You said YES 😭💖";
+      spawnHearts(30);
+
+      // freeze the "No" nonsense
+      stopDrift();
+      noBtn.style.opacity = 0.35;
+      noBtn.style.pointerEvents = 'none';
+
+      // Show final overlay after a tiny beat
+      setTimeout(() => {
+        finalScreen.classList.add('show');
+        spawnHearts(26);
+      }, 450);
+    });
+
+    moreHeartsBtn.addEventListener('click', () => spawnHearts(34));
+
+    resetBtn.addEventListener('click', () => {
+      accepted = false;
+      finalScreen.classList.remove('show');
+      result.textContent = "";
+      noBtn.style.opacity = 1;
+      noBtn.style.pointerEvents = 'auto';
+
+      // re-seed drift direction
+      driftVX = (Math.random() < 0.5 ? -1 : 1) * (0.35 + Math.random() * 0.35);
+      driftVY = (Math.random() < 0.5 ? -1 : 1) * (0.35 + Math.random() * 0.35);
+
+      const area = getArea();
+      placeNoButtonViewport(area.left + area.width * (0.55 + Math.random()*0.25),
+                            area.top  + area.height * (0.35 + Math.random()*0.35));
+      startDrift();
+    });
+
+    // Keep "No" inside on resize
+    window.addEventListener('resize', () => {
+      const c = getNoCenterViewport();
+      placeNoButtonViewport(c.x, c.y);
+    });
+  </script>
+</body>
+</html>
