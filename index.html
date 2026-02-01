@@ -26,7 +26,7 @@
       color:var(--ink);
     }
     .card{
-      width:min(560px, 92vw);
+      width:min(580px, 92vw);
       padding:28px 24px;
       border-radius:24px;
       background:var(--card);
@@ -49,7 +49,7 @@
 
     .playground{
       position:relative;
-      height:240px;
+      height:270px;
       border-radius:18px;
       background: rgba(255,255,255,.55);
       border: 1px solid rgba(0,0,0,.06);
@@ -78,6 +78,33 @@
     }
     #yes:hover{ filter: brightness(1.03); }
 
+    /* Horse GIF wrapper */
+    #horse{
+      position:absolute;
+      left:50%;
+      top:50%;
+      transform: translate(-50%, -50%) scaleX(1);
+      user-select:none;
+      pointer-events:none;
+      will-change: left, top, transform, opacity;
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,.15));
+    }
+    /* The GIF itself (edit size here if you want bigger/smaller) */
+    #horse img{
+      width: 74px;
+      height: auto;
+      display:block;
+    }
+
+    #rope{
+      position:absolute;
+      left:0;
+      top:0;
+      width:100%;
+      height:100%;
+      pointer-events:none;
+    }
+
     #no{
       position:absolute;
       left: 65%;
@@ -88,6 +115,36 @@
       box-shadow: 0 12px 25px rgba(108, 117, 125, .25);
       touch-action: manipulation;
       will-change: left, top;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    #no .tag{
+      font-size:18px;
+      line-height:1;
+    }
+
+    /* Dust particles */
+    .dustLayer{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      overflow:hidden;
+    }
+    .dust{
+      position:absolute;
+      width:10px;
+      height:10px;
+      border-radius:999px;
+      background: rgba(0,0,0,.12);
+      filter: blur(.4px);
+      transform: translate(-50%, -50%) scale(1);
+      animation: dustPuff 650ms ease-out forwards;
+    }
+    @keyframes dustPuff{
+      0%   { opacity: .35; transform: translate(-50%, -50%) scale(.7); }
+      60%  { opacity: .18; transform: translate(calc(-50% + 18px), calc(-50% - 10px)) scale(1.5); }
+      100% { opacity: 0;   transform: translate(calc(-50% + 28px), calc(-50% - 14px)) scale(1.9); }
     }
 
     .row{
@@ -123,7 +180,7 @@
     }
     @keyframes floatUp{
       to{
-        transform: translateY(-420px) rotate(18deg);
+        transform: translateY(-460px) rotate(18deg);
         opacity:0;
       }
     }
@@ -135,30 +192,43 @@
       display:none;
       place-items:center;
       padding:26px;
-      background: radial-gradient(circle at top, rgba(255,255,255,.75), rgba(255,255,255,.55));
+      background: radial-gradient(circle at top, rgba(255,255,255,.80), rgba(255,255,255,.58));
       backdrop-filter: blur(10px);
     }
     .final.show{ display:grid; }
 
     .finalCard{
-      width:min(520px, 92vw);
+      width:min(540px, 92vw);
       border-radius:22px;
-      background: rgba(255,255,255,.72);
+      background: rgba(255,255,255,.78);
       border: 1px solid rgba(0,0,0,.06);
       box-shadow: var(--shadow);
       padding:22px 18px;
     }
     .finalTitle{
       font-size: clamp(22px, 4vw, 34px);
-      margin:0 0 8px;
+      margin:0 0 10px;
       letter-spacing:-.02em;
     }
     .finalMsg{
       margin:0 0 14px;
-      opacity:.9;
+      opacity:.92;
       line-height:1.35;
       font-size:16px;
     }
+
+    .catWrap{
+      display:grid;
+      place-items:center;
+      margin: 12px 0 8px;
+    }
+    .catGif{
+      width:min(320px, 85%);
+      border-radius:18px;
+      border: 1px solid rgba(0,0,0,.08);
+      box-shadow: 0 14px 30px rgba(0,0,0,.12);
+    }
+
     .pillRow{
       display:flex;
       gap:10px;
@@ -174,7 +244,7 @@
       border-radius:999px;
       font-weight:800;
       border: 1px solid rgba(0,0,0,.08);
-      background: rgba(255,255,255,.7);
+      background: rgba(255,255,255,.75);
       cursor:pointer;
     }
     .pill:active{ transform: scale(.98); }
@@ -186,37 +256,56 @@
   </style>
 </head>
 <body>
-  <div class="card" id="card">
+  <div class="card">
     <div class="hearts" id="hearts"></div>
 
     <h1>Will you be my Valentine, Dema? 💘</h1>
-    <p>Say yes before “No” escapes the planet 😭</p>
+    <p>Try clicking “No”… if the horse lets you 😭🐎</p>
 
     <div class="playground" id="playground" aria-label="button area">
+      <div class="dustLayer" id="dustLayer"></div>
+
+      <svg id="rope" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <path id="ropePath" d="" fill="none" stroke="rgba(0,0,0,.20)" stroke-width="1.8" stroke-linecap="round" />
+      </svg>
+
       <div class="row" style="position:absolute; inset:auto 0 18px 0;">
         <button class="btn" id="yes" type="button">Yes 💞</button>
       </div>
 
-      <button class="btn" id="no" type="button">No 🙅‍♀️</button>
+      <!-- Put horse.gif in the same folder as this HTML -->
+      <div id="horse" aria-hidden="true">
+        <img src="horse.gif" alt="Running horse"/>
+      </div>
+
+      <button class="btn" id="no" type="button">
+        <span class="tag">🎀</span>
+        No
+      </button>
     </div>
 
     <div class="result" id="result"></div>
 
-    <!-- Final overlay -->
     <div class="final" id="final">
       <div class="finalCard">
         <h2 class="finalTitle">YAYYY DEMAAAAA 🥰💖</h2>
+
         <p class="finalMsg">
-          Officially my Valentine now. <br/>
-          I’m bringing the snacks, the vibes, and the “I’m never letting you go” energy 😌
+          I love you, dummy. Of course, I was gonna ask you to be my Valentine.
+          I predicted you would say something about me not asking thats why I added that part!
         </p>
+
+        <div class="catWrap">
+          <img class="catGif" alt="Dancing cat gif"
+            src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" />
+        </div>
 
         <div class="pillRow">
           <button class="pill" id="moreHearts" type="button">💘 More hearts</button>
           <button class="pill" id="reset" type="button">🔁 Do it again</button>
         </div>
 
-        <div class="tiny">P.S. “No” tried to run… and failed.</div>
+        <div class="tiny">P.S. The horse said “nope” 🐎</div>
       </div>
     </div>
   </div>
@@ -231,112 +320,50 @@
     const moreHeartsBtn = document.getElementById('moreHearts');
     const resetBtn = document.getElementById('reset');
 
-    // Drift settings
-    let driftVX = (Math.random() < 0.5 ? -1 : 1) * (0.35 + Math.random() * 0.35);
-    let driftVY = (Math.random() < 0.5 ? -1 : 1) * (0.35 + Math.random() * 0.35);
-    let driftTimer = null;
+    const horse = document.getElementById('horse');
+    const ropePath = document.getElementById('ropePath');
+    const dustLayer = document.getElementById('dustLayer');
+
     let accepted = false;
 
+    // Horse motion state
+    let horseX = 0.5, horseY = 0.5;
+    let horseVX = (Math.random() < 0.5 ? -1 : 1) * 0.0028;
+    let horseVY = (Math.random() < 0.5 ? -1 : 1) * 0.0023;
+
+    // Drag physics for No button
+    let noX = 0.60, noY = 0.55;
+    let noVX = 0, noVY = 0;
+
     function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
+    function lerp(a,b,t){ return a + (b-a)*t; }
 
-    function getArea(){
-      return playground.getBoundingClientRect();
+    function areaRect(){ return playground.getBoundingClientRect(); }
+
+    function setElNormPosition(el, xN, yN){
+      const r = areaRect();
+      const box = el.getBoundingClientRect();
+      const pad = 12;
+
+      const cx = xN * r.width;
+      const cy = yN * r.height;
+
+      const minX = pad + box.width/2;
+      const maxX = r.width - pad - box.width/2;
+      const minY = pad + box.height/2;
+      const maxY = r.height - pad - box.height/2;
+
+      el.style.left = clamp(cx, minX, maxX) + "px";
+      el.style.top  = clamp(cy, minY, maxY) + "px";
     }
 
-    function placeNoButtonViewport(x, y){
-      const area = getArea();
-      const btn = noBtn.getBoundingClientRect();
-
-      const localX = x - area.left;
-      const localY = y - area.top;
-
-      const pad = 10;
-      const minX = pad + btn.width/2;
-      const maxX = area.width - pad - btn.width/2;
-      const minY = pad + btn.height/2;
-      const maxY = area.height - pad - btn.height/2;
-
-      const nx = clamp(localX, minX, maxX);
-      const ny = clamp(localY, minY, maxY);
-
-      noBtn.style.left = nx + 'px';
-      noBtn.style.top  = ny + 'px';
-    }
-
-    function getNoCenterViewport(){
-      const r = noBtn.getBoundingClientRect();
-      return { x: r.left + r.width/2, y: r.top + r.height/2, w: r.width, h: r.height };
-    }
-
-    function moveNoAwayFrom(pointerX, pointerY){
-      if (accepted) return;
-
-      const c = getNoCenterViewport();
-      const dx = c.x - pointerX;
-      const dy = c.y - pointerY;
-
-      const mag = Math.hypot(dx, dy) || 1;
-      const ux = dx / mag;
-      const uy = dy / mag;
-
-      const jump = 140 + Math.random() * 140;
-
-      const targetX = c.x + ux * jump + (Math.random() - 0.5) * 70;
-      const targetY = c.y + uy * jump + (Math.random() - 0.5) * 70;
-
-      // After a dodge, slightly randomize drift direction so it feels alive
-      driftVX += (Math.random() - 0.5) * 0.35;
-      driftVY += (Math.random() - 0.5) * 0.35;
-
-      // cap drift speeds
-      driftVX = clamp(driftVX, -1.2, 1.2);
-      driftVY = clamp(driftVY, -1.2, 1.2);
-
-      placeNoButtonViewport(targetX, targetY);
-    }
-
-    function startDrift(){
-      stopDrift();
-      driftTimer = setInterval(() => {
-        if (accepted) return;
-
-        const area = getArea();
-        const c = getNoCenterViewport();
-
-        // current center in viewport coords
-        let nx = c.x + driftVX;
-        let ny = c.y + driftVY;
-
-        // Bounce off playground edges
-        const leftEdge   = area.left + 10 + c.w/2;
-        const rightEdge  = area.right - 10 - c.w/2;
-        const topEdge    = area.top + 10 + c.h/2;
-        const bottomEdge = area.bottom - 10 - c.h/2;
-
-        if (nx <= leftEdge || nx >= rightEdge) {
-          driftVX *= -1;
-          nx = clamp(nx, leftEdge, rightEdge);
-        }
-        if (ny <= topEdge || ny >= bottomEdge) {
-          driftVY *= -1;
-          ny = clamp(ny, topEdge, bottomEdge);
-        }
-
-        // Tiny random wobble to avoid perfect patterns
-        if (Math.random() < 0.04) {
-          driftVX += (Math.random() - 0.5) * 0.25;
-          driftVY += (Math.random() - 0.5) * 0.25;
-          driftVX = clamp(driftVX, -1.2, 1.2);
-          driftVY = clamp(driftVY, -1.2, 1.2);
-        }
-
-        placeNoButtonViewport(nx, ny);
-      }, 16); // ~60fps
-    }
-
-    function stopDrift(){
-      if (driftTimer) clearInterval(driftTimer);
-      driftTimer = null;
+    function getCenterPct(el){
+      const r = areaRect();
+      const b = el.getBoundingClientRect();
+      return {
+        x: ((b.left + b.width/2) - r.left) / r.width * 100,
+        y: ((b.top  + b.height/2) - r.top ) / r.height * 100
+      };
     }
 
     function spawnHearts(count=18){
@@ -353,49 +380,201 @@
       }
     }
 
-    // Init position & drift
-    (function init(){
-      const area = getArea();
-      placeNoButtonViewport(area.left + area.width * 0.65, area.top + area.height * 0.55);
-      startDrift();
-    })();
+    function spawnDust(intensity = 1){
+      const r = areaRect();
+      const hb = horse.getBoundingClientRect();
 
-    // Desktop: dodge when mouse is close
+      const x = (hb.left + hb.width*0.25) - r.left;
+      const y = (hb.top + hb.height*0.80) - r.top;
+      const count = Math.round(1 + intensity);
+
+      for (let i = 0; i < count; i++){
+        const d = document.createElement('div');
+        d.className = 'dust';
+        d.style.left = (x + (Math.random()*16 - 8)) + 'px';
+        d.style.top  = (y + (Math.random()*10 - 5)) + 'px';
+        d.style.width = (8 + Math.random()*10) + 'px';
+        d.style.height = d.style.width;
+        dustLayer.appendChild(d);
+        setTimeout(()=>d.remove(), 800);
+      }
+    }
+
+    // Neigh sound (no audio file needed)
+    let audioCtx = null;
+    function neigh(){
+      try{
+        audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = "sawtooth";
+        osc.frequency.setValueAtTime(420, now);
+        osc.frequency.exponentialRampToValueAtTime(740, now + 0.10);
+        osc.frequency.exponentialRampToValueAtTime(360, now + 0.30);
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.exponentialRampToValueAtTime(0.15, now + 0.03);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.32);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(now); osc.stop(now + 0.35);
+      } catch(e){}
+    }
+
+    // Rope attaches behind horse + to No
+    function drawRope(){
+      const h = getCenterPct(horse);
+      const n = getCenterPct(noBtn);
+
+      const vMag = Math.hypot(horseVX, horseVY) || 0.001;
+      const dirX = horseVX / vMag;
+      const dirY = horseVY / vMag;
+
+      // anchor behind horse
+      const rearOffset = 7.5; // bigger = more "behind"
+      const hx = h.x - dirX * rearOffset;
+      const hy = h.y - dirY * rearOffset;
+
+      // droop
+      const midX = (hx + n.x) / 2;
+      const midY = (hy + n.y) / 2 + 11;
+
+      ropePath.setAttribute("d", `M ${hx} ${hy} Q ${midX} ${midY} ${n.x} ${n.y}`);
+    }
+
+    let speedBoost = 1;
+
+    function updateSpeedBoostFromPointer(px, py){
+      const r = areaRect();
+      const inside = px >= r.left && px <= r.right && py >= r.top && py <= r.bottom;
+
+      if (!inside) {
+        speedBoost = lerp(speedBoost, 1, 0.08);
+        return;
+      }
+
+      const hb = horse.getBoundingClientRect();
+      const hx = hb.left + hb.width/2;
+      const hy = hb.top  + hb.height/2;
+      const dist = Math.hypot(px - hx, py - hy);
+
+      const target = dist < 180 ? 2.6 : 1.0;
+      speedBoost = lerp(speedBoost, target, 0.12);
+    }
+
+    let rafId = null;
+    let dustTick = 0;
+
+    function tick(){
+      if (accepted) return;
+
+      horseX += horseVX * speedBoost;
+      horseY += horseVY * speedBoost;
+
+      if (horseX < 0.08 || horseX > 0.92) horseVX *= -1;
+      if (horseY < 0.20 || horseY > 0.88) horseVY *= -1;
+
+      horseX = clamp(horseX, 0.08, 0.92);
+      horseY = clamp(horseY, 0.20, 0.88);
+
+      if (Math.random() < 0.03) horseVX += (Math.random() - 0.5) * 0.0013;
+      if (Math.random() < 0.03) horseVY += (Math.random() - 0.5) * 0.0013;
+      horseVX = clamp(horseVX, -0.0075, 0.0075);
+      horseVY = clamp(horseVY, -0.0075, 0.0075);
+
+      const facing = horseVX >= 0 ? 1 : -1;
+      horse.style.transform = `translate(-50%, -50%) scaleX(${facing})`;
+
+      setElNormPosition(horse, horseX, horseY);
+
+      const vMag = Math.hypot(horseVX, horseVY) || 0.001;
+      const dirX = horseVX / vMag;
+      const dirY = horseVY / vMag;
+
+      const ropeLen = 0.13 + 0.07 * speedBoost;
+      const targetNoX = clamp(horseX - dirX * ropeLen, 0.08, 0.92);
+      const targetNoY = clamp(horseY - dirY * ropeLen, 0.20, 0.88);
+
+      const stiffness = 0.028;
+      const damping = 0.86;
+
+      const ax = (targetNoX - noX) * stiffness;
+      const ay = (targetNoY - noY) * stiffness;
+
+      noVX = (noVX + ax) * damping;
+      noVY = (noVY + ay) * damping;
+
+      noX += noVX;
+      noY += noVY;
+
+      noX = clamp(noX, 0.10, 0.90);
+      noY = clamp(noY, 0.24, 0.86);
+
+      setElNormPosition(noBtn, noX, noY);
+      drawRope();
+
+      dustTick++;
+      if (speedBoost > 1.4 && dustTick % 10 === 0){
+        spawnDust(speedBoost > 2 ? 2.4 : 1.3);
+      }
+
+      rafId = requestAnimationFrame(tick);
+    }
+
+    function start(){
+      cancelAnimationFrame(rafId);
+
+      horseX = 0.62; horseY = 0.52;
+      noX = 0.56; noY = 0.62;
+      noVX = 0; noVY = 0;
+
+      horseVX = (Math.random() < 0.5 ? -1 : 1) * 0.0034;
+      horseVY = (Math.random() < 0.5 ? -1 : 1) * 0.0028;
+
+      speedBoost = 1;
+      dustTick = 0;
+
+      setElNormPosition(horse, horseX, horseY);
+      setElNormPosition(noBtn, noX, noY);
+      drawRope();
+
+      rafId = requestAnimationFrame(tick);
+    }
+
+    function yankHorse(){
+      horseVX += (Math.random() < 0.5 ? -1 : 1) * 0.0035;
+      horseVY += (Math.random() < 0.5 ? -1 : 1) * 0.0035;
+      horseVX = clamp(horseVX, -0.010, 0.010);
+      horseVY = clamp(horseVY, -0.010, 0.010);
+
+      speedBoost = 2.8;
+      neigh();
+      spawnDust(3);
+    }
+
     document.addEventListener('mousemove', (e) => {
       if (accepted) return;
-
-      const area = getArea();
-      const inside =
-        e.clientX >= area.left && e.clientX <= area.right &&
-        e.clientY >= area.top  && e.clientY <= area.bottom;
-
-      if (!inside) return;
-
-      const c = getNoCenterViewport();
-      const dist = Math.hypot(e.clientX - c.x, e.clientY - c.y);
-
-      if (dist < 135) {
-        moveNoAwayFrom(e.clientX, e.clientY);
-      }
+      updateSpeedBoostFromPointer(e.clientX, e.clientY);
     });
 
-    // Mobile: dodge taps
-    noBtn.addEventListener('touchstart', (e) => {
+    document.addEventListener('touchmove', (e) => {
       if (accepted) return;
-      const t = e.touches[0];
-      moveNoAwayFrom(t.clientX, t.clientY);
-      e.preventDefault();
-    }, { passive: false });
+      if (!e.touches || !e.touches[0]) return;
+      updateSpeedBoostFromPointer(e.touches[0].clientX, e.touches[0].clientY);
+    }, { passive: true });
 
-    // Also dodge clicks
     noBtn.addEventListener('click', (e) => {
       if (accepted) return;
-      moveNoAwayFrom(e.clientX, e.clientY);
+      yankHorse();
       e.preventDefault();
       e.stopPropagation();
     });
 
-    // YES behavior -> final screen
+    noBtn.addEventListener('touchstart', (e) => {
+      if (accepted) return;
+      yankHorse();
+      e.preventDefault();
+    }, { passive: false });
+
     yesBtn.addEventListener('click', () => {
       if (accepted) return;
       accepted = true;
@@ -403,19 +582,20 @@
       result.textContent = "You said YES 😭💖";
       spawnHearts(30);
 
-      // freeze the "No" nonsense
-      stopDrift();
+      cancelAnimationFrame(rafId);
+
       noBtn.style.opacity = 0.35;
       noBtn.style.pointerEvents = 'none';
+      ropePath.setAttribute("stroke", "rgba(0,0,0,.10)");
+      horse.style.opacity = 0.35;
 
-      // Show final overlay after a tiny beat
       setTimeout(() => {
         finalScreen.classList.add('show');
-        spawnHearts(26);
+        spawnHearts(34);
       }, 450);
     });
 
-    moreHeartsBtn.addEventListener('click', () => spawnHearts(34));
+    moreHeartsBtn.addEventListener('click', () => spawnHearts(44));
 
     resetBtn.addEventListener('click', () => {
       accepted = false;
@@ -423,22 +603,17 @@
       result.textContent = "";
       noBtn.style.opacity = 1;
       noBtn.style.pointerEvents = 'auto';
-
-      // re-seed drift direction
-      driftVX = (Math.random() < 0.5 ? -1 : 1) * (0.35 + Math.random() * 0.35);
-      driftVY = (Math.random() < 0.5 ? -1 : 1) * (0.35 + Math.random() * 0.35);
-
-      const area = getArea();
-      placeNoButtonViewport(area.left + area.width * (0.55 + Math.random()*0.25),
-                            area.top  + area.height * (0.35 + Math.random()*0.35));
-      startDrift();
+      ropePath.setAttribute("stroke", "rgba(0,0,0,.20)");
+      horse.style.opacity = 1;
+      start();
     });
 
-    // Keep "No" inside on resize
     window.addEventListener('resize', () => {
-      const c = getNoCenterViewport();
-      placeNoButtonViewport(c.x, c.y);
+      if (accepted) return;
+      start();
     });
+
+    start();
   </script>
 </body>
 </html>
