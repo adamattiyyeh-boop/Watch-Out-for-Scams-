@@ -9,39 +9,60 @@
 :root{
   --yes:#ff4d6d;
   --no:#6c757d;
-  --card:#ffffffdd;
+  --card:#ffffffde;
+  --shadow: 0 20px 60px rgba(0,0,0,.35);
 }
 
 *{box-sizing:border-box}
-
 body{
   margin:0;
   min-height:100vh;
   display:grid;
   place-items:center;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-  background:#000;
+  background:#0b0b0b;
   overflow:hidden;
 }
 
 /* MAIN CARD */
 .card{
-  width:min(620px,92vw);
-  padding:28px;
+  width:min(640px,92vw);
   border-radius:26px;
-  background:
-    linear-gradient(rgba(0,0,0,.35), rgba(0,0,0,.35)),
-    url("bg.jpg") center / cover no-repeat;
-  box-shadow:0 20px 60px rgba(0,0,0,.35);
-  color:white;
+  overflow:hidden;
   position:relative;
+  box-shadow: var(--shadow);
+  color:white;
+}
+
+/* Background image element (so it’s definitely visible if it loads) */
+.bg{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+  filter: brightness(.85);
+}
+
+/* Dark overlay for readability */
+.overlay{
+  position:absolute;
+  inset:0;
+  background: linear-gradient(rgba(0,0,0,.45), rgba(0,0,0,.45));
+}
+
+/* Content sits above background */
+.content{
+  position:relative;
+  padding:28px;
   text-align:center;
 }
 
-/* TEXT */
 h1{
   margin:0 0 8px;
   font-size:clamp(26px,4vw,40px);
+  letter-spacing:-.02em;
 }
 p{
   margin:0 0 18px;
@@ -64,6 +85,8 @@ p{
   font-weight:800;
   cursor:pointer;
   transition:transform .1s ease;
+  user-select:none;
+  -webkit-tap-highlight-color: transparent;
 }
 .btn:active{transform:scale(.96)}
 
@@ -80,25 +103,14 @@ p{
   box-shadow:0 10px 25px rgba(0,0,0,.35);
 }
 
-/* HEARTS */
-.hearts{
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  overflow:hidden;
+/* If photo fails to load, show a friendly hint */
+.photoHint{
+  margin-top:10px;
+  font-size:12px;
+  opacity:.85;
+  display:none;
 }
-.heart{
-  position:absolute;
-  bottom:-40px;
-  font-size:22px;
-  animation:floatUp linear forwards;
-}
-@keyframes floatUp{
-  to{
-    transform:translateY(-700px) rotate(18deg);
-    opacity:0;
-  }
-}
+.photoHint.show{ display:block; }
 
 /* FINAL SCREEN */
 .final{
@@ -108,6 +120,7 @@ p{
   backdrop-filter:blur(10px);
   display:none;
   place-items:center;
+  z-index:50;
 }
 .final.show{display:grid}
 
@@ -116,13 +129,12 @@ p{
   color:#111;
   padding:26px;
   border-radius:22px;
-  width:min(520px,92vw);
+  width:min(560px,92vw);
   text-align:center;
+  box-shadow: var(--shadow);
 }
 
-.final h2{
-  margin:0 0 10px;
-}
+.final h2{ margin:0 0 10px; }
 .final p{
   margin:0 0 16px;
   line-height:1.35;
@@ -135,24 +147,55 @@ p{
   font-weight:800;
   cursor:pointer;
 }
+
+/* FULLSCREEN HEARTS LAYER (over EVERYTHING) */
+.heartsFull{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  overflow:hidden;
+  z-index:60;
+}
+.heart{
+  position:absolute;
+  bottom:-40px;
+  font-size:22px;
+  animation:floatUp linear forwards;
+  opacity:.95;
+  filter: drop-shadow(0 10px 16px rgba(0,0,0,.35));
+}
+@keyframes floatUp{
+  to{
+    transform:translateY(-120vh) rotate(18deg);
+    opacity:0;
+  }
+}
 </style>
 </head>
 
 <body>
 
 <div class="card">
-  <div class="hearts" id="hearts"></div>
+  <!-- Background photo -->
+  <img id="bgImg" class="bg" src="bg.jpg" alt="Background photo">
+  <div class="overlay"></div>
 
-  <h1>Will you be my Valentine, Dema? 💘</h1>
-  <p>Try clicking “No”…</p>
+  <div class="content">
+    <h1>Will you be my Valentine, Dema? 💘</h1>
+    <p>Try clicking “No”…</p>
 
-  <div class="playground" id="playground">
-    <button class="btn" id="yes">Yes 💞</button>
-    <button class="btn" id="no">No 🙅‍♀️</button>
+    <div class="playground" id="playground">
+      <button class="btn" id="yes" type="button">Yes 💞</button>
+      <button class="btn" id="no" type="button">No 🙅‍♀️</button>
+    </div>
+
+    <div id="photoHint" class="photoHint">
+      Photo not loading. Make sure your image is in the same folder as this HTML and named exactly <b>bg.jpg</b>.
+    </div>
   </div>
 </div>
 
-<!-- FINAL SCREEN -->
+<!-- Final screen -->
 <div class="final" id="final">
   <div class="finalCard">
     <h2>YAYYY DEMAAAA 🥰💖</h2>
@@ -160,60 +203,95 @@ p{
       I love you, dummy. Of course, I was gonna ask you to be my Valentine.
       I predicted you would say something about me not asking thats why I added that part!
     </p>
-    <button class="pill" id="again">🔁 Do it again</button>
+    <button class="pill" id="again" type="button">🔁 Do it again</button>
   </div>
 </div>
+
+<!-- Fullscreen hearts layer -->
+<div class="heartsFull" id="heartsFull"></div>
 
 <script>
 const noBtn = document.getElementById("no");
 const playground = document.getElementById("playground");
 const yesBtn = document.getElementById("yes");
 const finalScreen = document.getElementById("final");
-const hearts = document.getElementById("hearts");
+const heartsFull = document.getElementById("heartsFull");
 const againBtn = document.getElementById("again");
+
+const bgImg = document.getElementById("bgImg");
+const photoHint = document.getElementById("photoHint");
+
+let heartsTimer = null;
+
+bgImg.addEventListener("error", () => {
+  photoHint.classList.add("show");
+});
 
 function moveNo(){
   const area = playground.getBoundingClientRect();
   const btn = noBtn.getBoundingClientRect();
 
-  const x = Math.random() * (area.width - btn.width);
-  const y = Math.random() * (area.height - btn.height);
+  const pad = 8;
+  const x = Math.random() * (area.width - btn.width - pad*2) + pad;
+  const y = Math.random() * (area.height - btn.height - pad*2) + pad;
 
   noBtn.style.left = x + "px";
-  noBtn.style.top = y + "px";
+  noBtn.style.top  = y + "px";
 }
 
 // Initial placement
 moveNo();
 
-// Avoid mouse
+// Dodge mouse
 playground.addEventListener("mousemove", e=>{
   const b = noBtn.getBoundingClientRect();
-  const d = Math.hypot(e.clientX - (b.left+b.width/2), e.clientY - (b.top+b.height/2));
-  if(d < 120) moveNo();
+  const dist = Math.hypot(
+    e.clientX - (b.left + b.width/2),
+    e.clientY - (b.top + b.height/2)
+  );
+  if(dist < 120) moveNo();
 });
 
-// Hearts
-function spawnHearts(n=12){
+// Also dodge taps/clicks
+noBtn.addEventListener("mouseenter", moveNo);
+noBtn.addEventListener("click", (e)=>{ e.preventDefault(); moveNo(); });
+noBtn.addEventListener("touchstart", (e)=>{ e.preventDefault(); moveNo(); }, {passive:false});
+
+function spawnHearts(n=14){
   for(let i=0;i<n;i++){
     const h = document.createElement("div");
-    h.className="heart";
-    h.textContent=Math.random()<.5?"💖":"💘";
-    h.style.left=Math.random()*window.innerWidth+"px";
-    h.style.animationDuration=(2+Math.random()*2)+"s";
-    hearts.appendChild(h);
-    setTimeout(()=>h.remove(),4000);
+    h.className = "heart";
+    h.textContent = Math.random() < .34 ? "💖" : (Math.random()<.5 ? "💘" : "💕");
+    h.style.left = (Math.random() * 100) + "vw";
+    h.style.fontSize = (18 + Math.random()*22) + "px";
+    h.style.animationDuration = (2.2 + Math.random()*2.2) + "s";
+    heartsFull.appendChild(h);
+    setTimeout(()=>h.remove(), 5200);
   }
 }
 
-yesBtn.onclick = ()=>{
-  finalScreen.classList.add("show");
-  setInterval(()=>spawnHearts(10),300);
-};
+function startHearts(){
+  stopHearts();
+  spawnHearts(30);
+  heartsTimer = setInterval(()=>spawnHearts(12), 260);
+}
 
-againBtn.onclick = ()=>{
-  location.reload();
-};
+function stopHearts(){
+  if(heartsTimer) clearInterval(heartsTimer);
+  heartsTimer = null;
+  heartsFull.innerHTML = "";
+}
+
+yesBtn.addEventListener("click", ()=>{
+  finalScreen.classList.add("show");
+  startHearts();
+});
+
+againBtn.addEventListener("click", ()=>{
+  stopHearts();
+  finalScreen.classList.remove("show");
+  moveNo();
+});
 </script>
 
 </body>
