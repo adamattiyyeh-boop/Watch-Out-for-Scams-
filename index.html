@@ -1,182 +1,211 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Valentine for Dema</title>
 
 <style>
-:root{
-  --yes:#ff4d6d;
-  --no:#6c757d;
-  --card:#ffffffde;
-  --shadow: 0 20px 60px rgba(0,0,0,.35);
-}
-
-*{box-sizing:border-box}
-body{
-  margin:0;
-  min-height:100vh;
-  display:grid;
-  place-items:center;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-  background:#0b0b0b;
-  overflow:hidden;
-}
-
-/* MAIN CARD */
-.card{
-  width:min(640px,92vw);
-  border-radius:26px;
-  overflow:hidden;
-  position:relative;
-  box-shadow: var(--shadow);
-  color:white;
-}
-
-/* Background image element (so it’s definitely visible if it loads) */
-.bg{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  object-position:center;
-  filter: brightness(.85);
-}
-
-/* Dark overlay for readability */
-.overlay{
-  position:absolute;
-  inset:0;
-  background: linear-gradient(rgba(0,0,0,.45), rgba(0,0,0,.45));
-}
-
-/* Content sits above background */
-.content{
-  position:relative;
-  padding:28px;
-  text-align:center;
-}
-
-h1{
-  margin:0 0 8px;
-  font-size:clamp(26px,4vw,40px);
-  letter-spacing:-.02em;
-}
-p{
-  margin:0 0 18px;
-  opacity:.95;
-}
-
-/* BUTTON AREA */
-.playground{
-  position:relative;
-  height:260px;
-  border-radius:18px;
-}
-
-/* BUTTONS */
-.btn{
-  border:none;
-  padding:14px 22px;
-  border-radius:999px;
-  font-size:16px;
-  font-weight:800;
-  cursor:pointer;
-  transition:transform .1s ease;
-  user-select:none;
-  -webkit-tap-highlight-color: transparent;
-}
-.btn:active{transform:scale(.96)}
-
-#yes{
-  background:var(--yes);
-  color:white;
-  box-shadow:0 10px 25px rgba(255,77,109,.45);
-}
-
-#no{
-  position:absolute;
-  background:var(--no);
-  color:white;
-  box-shadow:0 10px 25px rgba(0,0,0,.35);
-}
-
-/* If photo fails to load, show a friendly hint */
-.photoHint{
-  margin-top:10px;
-  font-size:12px;
-  opacity:.85;
-  display:none;
-}
-.photoHint.show{ display:block; }
-
-/* FINAL SCREEN */
-.final{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.65);
-  backdrop-filter:blur(10px);
-  display:none;
-  place-items:center;
-  z-index:50;
-}
-.final.show{display:grid}
-
-.finalCard{
-  background:var(--card);
-  color:#111;
-  padding:26px;
-  border-radius:22px;
-  width:min(560px,92vw);
-  text-align:center;
-  box-shadow: var(--shadow);
-}
-
-.final h2{ margin:0 0 10px; }
-.final p{
-  margin:0 0 16px;
-  line-height:1.35;
-}
-
-.pill{
-  padding:10px 18px;
-  border-radius:999px;
-  border:none;
-  font-weight:800;
-  cursor:pointer;
-}
-
-/* FULLSCREEN HEARTS LAYER (over EVERYTHING) */
-.heartsFull{
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  overflow:hidden;
-  z-index:60;
-}
-.heart{
-  position:absolute;
-  bottom:-40px;
-  font-size:22px;
-  animation:floatUp linear forwards;
-  opacity:.95;
-  filter: drop-shadow(0 10px 16px rgba(0,0,0,.35));
-}
-@keyframes floatUp{
-  to{
-    transform:translateY(-120vh) rotate(18deg);
-    opacity:0;
+  :root{
+    --yes:#ff4d6d;
+    --no:#6c757d;
+    --shadow: 0 22px 70px rgba(0,0,0,.45);
+    --cardText: #fff;
   }
-}
+
+  *{box-sizing:border-box}
+
+  body{
+    margin:0;
+    min-height:100vh;
+    display:grid;
+    place-items:center;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    background:#0b0b0b;
+    overflow:hidden;
+  }
+
+  /* MAIN CARD */
+  .card{
+    width:min(680px, 94vw);
+    border-radius:28px;
+    overflow:hidden;
+    position:relative;
+    box-shadow: var(--shadow);
+    color: var(--cardText);
+  }
+
+  /* Background photo (guaranteed visible if file exists) */
+  .bg{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    object-position:center;
+    transform: scale(1.03);
+    filter: saturate(1.1) contrast(1.05) brightness(.90);
+  }
+
+  /* Make text readable but keep photo visible */
+  .overlay{
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(circle at 20% 10%, rgba(0,0,0,.20), rgba(0,0,0,.55)),
+      linear-gradient(rgba(0,0,0,.35), rgba(0,0,0,.55));
+  }
+
+  .content{
+    position:relative;
+    padding:28px 26px 24px;
+    text-align:center;
+  }
+
+  h1{
+    margin:0 0 8px;
+    font-size: clamp(26px, 4vw, 44px);
+    letter-spacing:-.02em;
+    text-shadow: 0 10px 25px rgba(0,0,0,.40);
+  }
+
+  p{
+    margin:0 0 18px;
+    opacity:.95;
+    text-shadow: 0 10px 25px rgba(0,0,0,.35);
+  }
+
+  .playground{
+    position:relative;
+    height:270px;
+    border-radius:18px;
+  }
+
+  /* Buttons */
+  .btn{
+    border:none;
+    padding:14px 22px;
+    border-radius:999px;
+    font-size:16px;
+    font-weight:900;
+    cursor:pointer;
+    user-select:none;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform .1s ease, filter .15s ease;
+  }
+  .btn:active{ transform: scale(.96); }
+
+  #yes{
+    background: var(--yes);
+    color:white;
+    box-shadow: 0 12px 30px rgba(255,77,109,.45);
+  }
+  #yes:hover{ filter: brightness(1.05); }
+
+  #no{
+    position:absolute;
+    background: var(--no);
+    color:white;
+    box-shadow: 0 12px 30px rgba(0,0,0,.35);
+  }
+
+  /* If photo fails to load */
+  .photoHint{
+    margin-top:12px;
+    font-size:12px;
+    opacity:.95;
+    display:none;
+    background: rgba(0,0,0,.35);
+    border: 1px solid rgba(255,255,255,.22);
+    padding:10px 12px;
+    border-radius:14px;
+    text-align:left;
+  }
+  .photoHint.show{ display:block; }
+
+  /* FINAL SCREEN */
+  .final{
+    position:fixed;
+    inset:0;
+    display:none;
+    place-items:center;
+    background: rgba(0,0,0,.70);
+    backdrop-filter: blur(10px);
+    z-index: 50;
+  }
+  .final.show{ display:grid; }
+
+  .finalCard{
+    width:min(600px, 92vw);
+    background: rgba(255,255,255,.92);
+    color:#111;
+    border-radius:22px;
+    padding:26px 20px;
+    box-shadow: var(--shadow);
+    text-align:center;
+  }
+  .finalCard h2{
+    margin:0 0 10px;
+    font-size: clamp(22px, 3vw, 34px);
+  }
+  .finalCard p{
+    margin:0 0 16px;
+    line-height:1.35;
+    text-shadow:none;
+    opacity:1;
+  }
+
+  .pill{
+    border:none;
+    padding:10px 18px;
+    border-radius:999px;
+    font-weight:900;
+    cursor:pointer;
+    background: #111;
+    color:#fff;
+  }
+  .pill:active{ transform: scale(.97); }
+
+  /* FULLSCREEN HEART RAIN (over EVERYTHING) */
+  .heartsFull{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    overflow:hidden;
+    z-index: 9999; /* guaranteed above final overlay */
+  }
+
+  .heart{
+    position:absolute;
+    top:-80px;
+    opacity:.98;
+    will-change: transform, opacity;
+    filter: drop-shadow(0 18px 22px rgba(0,0,0,.30));
+    animation-name: fallDown, sway;
+    animation-timing-function: linear, ease-in-out;
+    animation-iteration-count: 1, infinite;
+  }
+
+  /* Fall down */
+  @keyframes fallDown{
+    to{
+      transform: translateY(140vh) rotate(40deg);
+      opacity:0;
+    }
+  }
+
+  /* Side-to-side sway */
+  @keyframes sway{
+    0%   { margin-left: -8px; }
+    50%  { margin-left:  10px; }
+    100% { margin-left: -6px; }
+  }
 </style>
 </head>
 
 <body>
 
 <div class="card">
-  <!-- Background photo -->
   <img id="bgImg" class="bg" src="bg.jpg" alt="Background photo">
   <div class="overlay"></div>
 
@@ -190,7 +219,9 @@ p{
     </div>
 
     <div id="photoHint" class="photoHint">
-      Photo not loading. Make sure your image is in the same folder as this HTML and named exactly <b>bg.jpg</b>.
+      <b>Photo not loading.</b><br><br>
+      Put your image in the <b>same folder</b> as this HTML and name it <b>bg.jpg</b>.<br>
+      If your file is PNG/JPEG, change the filename in the code too (example: <b>bg.jpeg</b>).
     </div>
   </div>
 </div>
@@ -211,87 +242,118 @@ p{
 <div class="heartsFull" id="heartsFull"></div>
 
 <script>
-const noBtn = document.getElementById("no");
-const playground = document.getElementById("playground");
-const yesBtn = document.getElementById("yes");
-const finalScreen = document.getElementById("final");
-const heartsFull = document.getElementById("heartsFull");
-const againBtn = document.getElementById("again");
+  const noBtn = document.getElementById("no");
+  const playground = document.getElementById("playground");
+  const yesBtn = document.getElementById("yes");
+  const finalScreen = document.getElementById("final");
+  const heartsFull = document.getElementById("heartsFull");
+  const againBtn = document.getElementById("again");
 
-const bgImg = document.getElementById("bgImg");
-const photoHint = document.getElementById("photoHint");
+  const bgImg = document.getElementById("bgImg");
+  const photoHint = document.getElementById("photoHint");
 
-let heartsTimer = null;
+  let heartsTimer = null;
 
-bgImg.addEventListener("error", () => {
-  photoHint.classList.add("show");
-});
+  // Show hint if image fails
+  bgImg.addEventListener("error", () => {
+    photoHint.classList.add("show");
+  });
 
-function moveNo(){
-  const area = playground.getBoundingClientRect();
-  const btn = noBtn.getBoundingClientRect();
+  function moveNo(){
+    const area = playground.getBoundingClientRect();
+    const btn  = noBtn.getBoundingClientRect();
 
-  const pad = 8;
-  const x = Math.random() * (area.width - btn.width - pad*2) + pad;
-  const y = Math.random() * (area.height - btn.height - pad*2) + pad;
+    const pad = 8;
+    const x = Math.random() * (area.width  - btn.width  - pad*2) + pad;
+    const y = Math.random() * (area.height - btn.height - pad*2) + pad;
 
-  noBtn.style.left = x + "px";
-  noBtn.style.top  = y + "px";
-}
-
-// Initial placement
-moveNo();
-
-// Dodge mouse
-playground.addEventListener("mousemove", e=>{
-  const b = noBtn.getBoundingClientRect();
-  const dist = Math.hypot(
-    e.clientX - (b.left + b.width/2),
-    e.clientY - (b.top + b.height/2)
-  );
-  if(dist < 120) moveNo();
-});
-
-// Also dodge taps/clicks
-noBtn.addEventListener("mouseenter", moveNo);
-noBtn.addEventListener("click", (e)=>{ e.preventDefault(); moveNo(); });
-noBtn.addEventListener("touchstart", (e)=>{ e.preventDefault(); moveNo(); }, {passive:false});
-
-function spawnHearts(n=14){
-  for(let i=0;i<n;i++){
-    const h = document.createElement("div");
-    h.className = "heart";
-    h.textContent = Math.random() < .34 ? "💖" : (Math.random()<.5 ? "💘" : "💕");
-    h.style.left = (Math.random() * 100) + "vw";
-    h.style.fontSize = (18 + Math.random()*22) + "px";
-    h.style.animationDuration = (2.2 + Math.random()*2.2) + "s";
-    heartsFull.appendChild(h);
-    setTimeout(()=>h.remove(), 5200);
+    noBtn.style.left = x + "px";
+    noBtn.style.top  = y + "px";
   }
-}
 
-function startHearts(){
-  stopHearts();
-  spawnHearts(30);
-  heartsTimer = setInterval(()=>spawnHearts(12), 260);
-}
-
-function stopHearts(){
-  if(heartsTimer) clearInterval(heartsTimer);
-  heartsTimer = null;
-  heartsFull.innerHTML = "";
-}
-
-yesBtn.addEventListener("click", ()=>{
-  finalScreen.classList.add("show");
-  startHearts();
-});
-
-againBtn.addEventListener("click", ()=>{
-  stopHearts();
-  finalScreen.classList.remove("show");
+  // Initial placement
   moveNo();
-});
+
+  // Dodge mouse (stronger + faster)
+  playground.addEventListener("mousemove", e => {
+    const b = noBtn.getBoundingClientRect();
+    const dist = Math.hypot(
+      e.clientX - (b.left + b.width/2),
+      e.clientY - (b.top  + b.height/2)
+    );
+
+    if (dist < 140) moveNo();
+  });
+
+  // Also dodge taps/clicks
+  noBtn.addEventListener("mouseenter", moveNo);
+  noBtn.addEventListener("click", (e)=>{ e.preventDefault(); moveNo(); });
+  noBtn.addEventListener("touchstart", (e)=>{ e.preventDefault(); moveNo(); }, {passive:false});
+
+  // CRAZY HEART RAIN
+  function spawnHearts(count=25){
+    for (let i=0; i<count; i++){
+      const h = document.createElement("div");
+      h.className = "heart";
+
+      // Different heart emojis for variety
+      const pick = Math.random();
+      h.textContent =
+        pick < 0.25 ? "💖" :
+        pick < 0.50 ? "💘" :
+        pick < 0.75 ? "💕" : "❤️";
+
+      // Spread across screen
+      h.style.left = (Math.random() * 100) + "vw";
+
+      // Size variety
+      const size = 18 + Math.random() * 36; // 18px..54px
+      h.style.fontSize = size + "px";
+
+      // Fall speed variety
+      const fallTime = 2.2 + Math.random() * 3.2; // 2.2s..5.4s
+      h.style.animationDuration = `${fallTime}s, ${0.9 + Math.random()*0.9}s`;
+
+      // Random sway amount + random delay
+      h.style.animationDelay = `0s, ${Math.random()*0.2}s`;
+
+      // Random rotation start (for chaos)
+      h.style.transform = `rotate(${(Math.random()*60 - 30)}deg)`;
+
+      heartsFull.appendChild(h);
+
+      // Remove after it finishes falling
+      setTimeout(() => h.remove(), (fallTime * 1000) + 600);
+    }
+  }
+
+  function startHearts(){
+    stopHearts();
+    // instant burst
+    spawnHearts(70);
+
+    // continuous downpour
+    heartsTimer = setInterval(() => {
+      spawnHearts(30);
+    }, 140);
+  }
+
+  function stopHearts(){
+    if (heartsTimer) clearInterval(heartsTimer);
+    heartsTimer = null;
+    heartsFull.innerHTML = "";
+  }
+
+  yesBtn.addEventListener("click", () => {
+    finalScreen.classList.add("show");
+    startHearts();
+  });
+
+  againBtn.addEventListener("click", () => {
+    stopHearts();
+    finalScreen.classList.remove("show");
+    moveNo();
+  });
 </script>
 
 </body>
