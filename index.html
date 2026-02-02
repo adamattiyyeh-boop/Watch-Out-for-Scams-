@@ -1,631 +1,220 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Valentine for Dema</title>
-  <style>
-    :root{
-      --bg1:#ffdee9;
-      --bg2:#b5fffc;
-      --card:#ffffffcc;
-      --shadow: 0 20px 60px rgba(0,0,0,.15);
-      --yes:#ff4d6d;
-      --no:#6c757d;
-      --ink:#151515;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      min-height:100vh;
-      display:grid;
-      place-items:center;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-      background: radial-gradient(circle at top, var(--bg1), var(--bg2));
-      overflow:hidden;
-      color:var(--ink);
-    }
-    .card{
-      width:min(600px, 92vw);
-      padding:28px 24px;
-      border-radius:24px;
-      background:var(--card);
-      backdrop-filter: blur(10px);
-      box-shadow: var(--shadow);
-      text-align:center;
-      position:relative;
-      overflow:hidden;
-    }
-    h1{
-      margin:0 0 8px;
-      font-size: clamp(24px, 4vw, 38px);
-      letter-spacing:-.02em;
-    }
-    p{
-      margin:0 0 18px;
-      opacity:.85;
-      font-size: 16px;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Valentine for Dema</title>
 
-    .playground{
-      position:relative;
-      height:285px;
-      border-radius:18px;
-      background: rgba(255,255,255,.55);
-      border: 1px solid rgba(0,0,0,.06);
-      overflow:hidden;
-      margin-top:14px;
-    }
+<style>
+:root{
+  --yes:#ff4d6d;
+  --no:#6c757d;
+  --card:#ffffffdd;
+}
 
-    .btn{
-      border:none;
-      padding:14px 18px;
-      border-radius:999px;
-      font-size:16px;
-      font-weight:800;
-      cursor:pointer;
-      transition: transform .08s ease, filter .15s ease;
-      user-select:none;
-      -webkit-tap-highlight-color: transparent;
-      letter-spacing:.2px;
-      white-space:nowrap;
-    }
-    .btn:active{ transform: scale(.98); }
+*{box-sizing:border-box}
 
-    #yes{
-      background: var(--yes);
-      color:white;
-      box-shadow: 0 12px 25px rgba(255, 77, 109, .35);
-    }
-    #yes:hover{ filter: brightness(1.03); }
+body{
+  margin:0;
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  background:#000;
+  overflow:hidden;
+}
 
-    /* Rope SVG */
-    #rope{
-      position:absolute;
-      inset:0;
-      width:100%;
-      height:100%;
-      pointer-events:none;
-    }
+/* MAIN CARD */
+.card{
+  width:min(620px,92vw);
+  padding:28px;
+  border-radius:26px;
+  background:
+    linear-gradient(rgba(0,0,0,.35), rgba(0,0,0,.35)),
+    url("bg.jpg") center / cover no-repeat;
+  box-shadow:0 20px 60px rgba(0,0,0,.35);
+  color:white;
+  position:relative;
+  text-align:center;
+}
 
-    /* Horse emoji */
-    #horse{
-      position:absolute;
-      left:50%;
-      top:50%;
-      transform: translate(-50%, -50%);
-      user-select:none;
-      pointer-events:none;
-      will-change: left, top, transform, opacity;
-      filter: drop-shadow(0 10px 18px rgba(0,0,0,.15));
-      font-size: 44px; /* make horse bigger */
-      animation: gallopBob 220ms infinite alternate ease-in-out;
-    }
+/* TEXT */
+h1{
+  margin:0 0 8px;
+  font-size:clamp(26px,4vw,40px);
+}
+p{
+  margin:0 0 18px;
+  opacity:.95;
+}
 
-    @keyframes gallopBob{
-      from { transform: translate(-50%, -50%) translateY(0px) rotate(-1deg); }
-      to   { transform: translate(-50%, -50%) translateY(4px) rotate(1deg); }
-    }
+/* BUTTON AREA */
+.playground{
+  position:relative;
+  height:260px;
+  border-radius:18px;
+}
 
-    /* The "No" button */
-    #no{
-      position:absolute;
-      left: 65%;
-      top: 55%;
-      transform: translate(-50%, -50%);
-      background: var(--no);
-      color:white;
-      box-shadow: 0 12px 25px rgba(108, 117, 125, .25);
-      touch-action: manipulation;
-      will-change: left, top;
-      display:flex;
-      align-items:center;
-      gap:8px;
-    }
-    #no .tag{ font-size:18px; line-height:1; }
+/* BUTTONS */
+.btn{
+  border:none;
+  padding:14px 22px;
+  border-radius:999px;
+  font-size:16px;
+  font-weight:800;
+  cursor:pointer;
+  transition:transform .1s ease;
+}
+.btn:active{transform:scale(.96)}
 
-    /* Dust particles */
-    .dustLayer{
-      position:absolute;
-      inset:0;
-      pointer-events:none;
-      overflow:hidden;
-    }
-    .dust{
-      position:absolute;
-      width:10px;
-      height:10px;
-      border-radius:999px;
-      background: rgba(0,0,0,.12);
-      filter: blur(.4px);
-      transform: translate(-50%, -50%) scale(1);
-      animation: dustPuff 650ms ease-out forwards;
-    }
-    @keyframes dustPuff{
-      0%   { opacity: .35; transform: translate(-50%, -50%) scale(.7); }
-      60%  { opacity: .18; transform: translate(calc(-50% + 18px), calc(-50% - 10px)) scale(1.5); }
-      100% { opacity: 0;   transform: translate(calc(-50% + 28px), calc(-50% - 14px)) scale(1.9); }
-    }
+#yes{
+  background:var(--yes);
+  color:white;
+  box-shadow:0 10px 25px rgba(255,77,109,.45);
+}
 
-    .row{
-      display:flex;
-      gap:12px;
-      justify-content:center;
-      flex-wrap:wrap;
-      margin-top:10px;
-    }
+#no{
+  position:absolute;
+  background:var(--no);
+  color:white;
+  box-shadow:0 10px 25px rgba(0,0,0,.35);
+}
 
-    .result{
-      margin-top:14px;
-      font-weight:800;
-      font-size:18px;
-      min-height: 26px;
-    }
+/* HEARTS */
+.hearts{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  overflow:hidden;
+}
+.heart{
+  position:absolute;
+  bottom:-40px;
+  font-size:22px;
+  animation:floatUp linear forwards;
+}
+@keyframes floatUp{
+  to{
+    transform:translateY(-700px) rotate(18deg);
+    opacity:0;
+  }
+}
 
-    /* Hearts */
-    .hearts{
-      position:absolute;
-      inset:0;
-      pointer-events:none;
-      overflow:hidden;
-      border-radius:24px;
-    }
-    .heart{
-      position:absolute;
-      bottom:-30px;
-      font-size:18px;
-      animation: floatUp linear forwards;
-      opacity:.95;
-      filter: drop-shadow(0 6px 10px rgba(0,0,0,.12));
-    }
-    @keyframes floatUp{
-      to{
-        transform: translateY(-520px) rotate(18deg);
-        opacity:0;
-      }
-    }
+/* FINAL SCREEN */
+.final{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.65);
+  backdrop-filter:blur(10px);
+  display:none;
+  place-items:center;
+}
+.final.show{display:grid}
 
-    /* Final screen */
-    .final{
-      position:absolute;
-      inset:0;
-      display:none;
-      place-items:center;
-      padding:26px;
-      background: radial-gradient(circle at top, rgba(255,255,255,.82), rgba(255,255,255,.60));
-      backdrop-filter: blur(10px);
-    }
-    .final.show{ display:grid; }
+.finalCard{
+  background:var(--card);
+  color:#111;
+  padding:26px;
+  border-radius:22px;
+  width:min(520px,92vw);
+  text-align:center;
+}
 
-    .finalCard{
-      width:min(560px, 92vw);
-      border-radius:22px;
-      background: rgba(255,255,255,.82);
-      border: 1px solid rgba(0,0,0,.06);
-      box-shadow: var(--shadow);
-      padding:22px 18px;
-      position:relative;
-      overflow:hidden;
-    }
-    .finalTitle{
-      font-size: clamp(22px, 4vw, 34px);
-      margin:0 0 10px;
-      letter-spacing:-.02em;
-    }
-    .finalMsg{
-      margin:0 0 14px;
-      opacity:.92;
-      line-height:1.35;
-      font-size:16px;
-    }
+.final h2{
+  margin:0 0 10px;
+}
+.final p{
+  margin:0 0 16px;
+  line-height:1.35;
+}
 
-    .photoWrap{
-      display:grid;
-      place-items:center;
-      margin: 10px 0 12px;
-    }
-    .photo{
-      width:min(360px, 90%);
-      max-height: 320px;
-      object-fit: cover;
-      border-radius:18px;
-      border: 1px solid rgba(0,0,0,.08);
-      box-shadow: 0 14px 30px rgba(0,0,0,.12);
-    }
-
-    .pillRow{
-      display:flex;
-      gap:10px;
-      justify-content:center;
-      flex-wrap:wrap;
-      margin-top:14px;
-    }
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:10px 14px;
-      border-radius:999px;
-      font-weight:800;
-      border: 1px solid rgba(0,0,0,.08);
-      background: rgba(255,255,255,.78);
-      cursor:pointer;
-    }
-    .pill:active{ transform: scale(.98); }
-    .tiny{
-      font-size:12px;
-      opacity:.7;
-      margin-top:10px;
-    }
-  </style>
+.pill{
+  padding:10px 18px;
+  border-radius:999px;
+  border:none;
+  font-weight:800;
+  cursor:pointer;
+}
+</style>
 </head>
+
 <body>
-  <div class="card">
-    <div class="hearts" id="hearts"></div>
 
-    <h1>Will you be my Valentine, Dema? 💘</h1>
-    <p>Try clicking “No”… if the horse lets you 😭🐎</p>
+<div class="card">
+  <div class="hearts" id="hearts"></div>
 
-    <div class="playground" id="playground" aria-label="button area">
-      <div class="dustLayer" id="dustLayer"></div>
+  <h1>Will you be my Valentine, Dema? 💘</h1>
+  <p>Try clicking “No”…</p>
 
-      <svg id="rope" viewBox="0 0 100 100" preserveAspectRatio="none">
-        <path id="ropePath" d="" fill="none" stroke="rgba(0,0,0,.20)" stroke-width="1.8" stroke-linecap="round" />
-      </svg>
-
-      <div class="row" style="position:absolute; inset:auto 0 18px 0;">
-        <button class="btn" id="yes" type="button">Yes 💞</button>
-      </div>
-
-      <div id="horse" aria-hidden="true">🐎💨</div>
-
-      <button class="btn" id="no" type="button">
-        <span class="tag">🎀</span>
-        No
-      </button>
-    </div>
-
-    <div class="result" id="result"></div>
-
-    <div class="final" id="final">
-      <div class="finalCard">
-        <h2 class="finalTitle">YAYYY DEMAAAAA 🥰💖</h2>
-
-        <p class="finalMsg">
-          I love you, dummy. Of course, I was gonna ask you to be my Valentine.
-          I predicted you would say something about me not asking thats why I added that part!
-        </p>
-
-        <div class="photoWrap">
-          <!-- Put your photo in the same folder as this HTML and name it: valentine_photo.jpg -->
-          <img class="photo" src="valentine_photo.jpg" alt="Photo"/>
-        </div>
-
-        <div class="pillRow">
-          <button class="pill" id="moreHearts" type="button">💘 More hearts</button>
-          <button class="pill" id="reset" type="button">🔁 Do it again</button>
-        </div>
-
-        <div class="tiny">P.S. The horse said “nope” 🐎</div>
-      </div>
-    </div>
+  <div class="playground" id="playground">
+    <button class="btn" id="yes">Yes 💞</button>
+    <button class="btn" id="no">No 🙅‍♀️</button>
   </div>
+</div>
+
+<!-- FINAL SCREEN -->
+<div class="final" id="final">
+  <div class="finalCard">
+    <h2>YAYYY DEMAAAA 🥰💖</h2>
+    <p>
+      I love you, dummy. Of course, I was gonna ask you to be my Valentine.
+      I predicted you would say something about me not asking thats why I added that part!
+    </p>
+    <button class="pill" id="again">🔁 Do it again</button>
+  </div>
+</div>
+
+<script>
+const noBtn = document.getElementById("no");
+const playground = document.getElementById("playground");
+const yesBtn = document.getElementById("yes");
+const finalScreen = document.getElementById("final");
+const hearts = document.getElementById("hearts");
+const againBtn = document.getElementById("again");
+
+function moveNo(){
+  const area = playground.getBoundingClientRect();
+  const btn = noBtn.getBoundingClientRect();
+
+  const x = Math.random() * (area.width - btn.width);
+  const y = Math.random() * (area.height - btn.height);
+
+  noBtn.style.left = x + "px";
+  noBtn.style.top = y + "px";
+}
+
+// Initial placement
+moveNo();
+
+// Avoid mouse
+playground.addEventListener("mousemove", e=>{
+  const b = noBtn.getBoundingClientRect();
+  const d = Math.hypot(e.clientX - (b.left+b.width/2), e.clientY - (b.top+b.height/2));
+  if(d < 120) moveNo();
+});
+
+// Hearts
+function spawnHearts(n=12){
+  for(let i=0;i<n;i++){
+    const h = document.createElement("div");
+    h.className="heart";
+    h.textContent=Math.random()<.5?"💖":"💘";
+    h.style.left=Math.random()*window.innerWidth+"px";
+    h.style.animationDuration=(2+Math.random()*2)+"s";
+    hearts.appendChild(h);
+    setTimeout(()=>h.remove(),4000);
+  }
+}
+
+yesBtn.onclick = ()=>{
+  finalScreen.classList.add("show");
+  setInterval(()=>spawnHearts(10),300);
+};
+
+againBtn.onclick = ()=>{
+  location.reload();
+};
+</script>
 
-  <script>
-    const playground = document.getElementById('playground');
-    const noBtn = document.getElementById('no');
-    const yesBtn = document.getElementById('yes');
-    const result = document.getElementById('result');
-    const heartsLayer = document.getElementById('hearts');
-    const finalScreen = document.getElementById('final');
-    const moreHeartsBtn = document.getElementById('moreHearts');
-    const resetBtn = document.getElementById('reset');
-
-    const horse = document.getElementById('horse');
-    const ropePath = document.getElementById('ropePath');
-    const dustLayer = document.getElementById('dustLayer');
-
-    let accepted = false;
-
-    // Horse motion state (normalized 0..1 within playground)
-    let horseX = 0.5, horseY = 0.5;
-    let horseVX = (Math.random() < 0.5 ? -1 : 1) * 0.0028;
-    let horseVY = (Math.random() < 0.5 ? -1 : 1) * 0.0023;
-
-    // Drag physics for No button
-    let noX = 0.60, noY = 0.55;
-    let noVX = 0, noVY = 0;
-
-    function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
-    function lerp(a,b,t){ return a + (b-a)*t; }
-    function areaRect(){ return playground.getBoundingClientRect(); }
-
-    function setElNormPosition(el, xN, yN){
-      const r = areaRect();
-      const box = el.getBoundingClientRect();
-      const pad = 12;
-
-      const cx = xN * r.width;
-      const cy = yN * r.height;
-
-      const minX = pad + box.width/2;
-      const maxX = r.width - pad - box.width/2;
-      const minY = pad + box.height/2;
-      const maxY = r.height - pad - box.height/2;
-
-      el.style.left = clamp(cx, minX, maxX) + "px";
-      el.style.top  = clamp(cy, minY, maxY) + "px";
-    }
-
-    function getCenterPct(el){
-      const r = areaRect();
-      const b = el.getBoundingClientRect();
-      return {
-        x: ((b.left + b.width/2) - r.left) / r.width * 100,
-        y: ((b.top  + b.height/2) - r.top ) / r.height * 100,
-        w: b.width,
-        h: b.height
-      };
-    }
-
-    function spawnHearts(count=18){
-      const area = heartsLayer.getBoundingClientRect();
-      for(let i=0;i<count;i++){
-        const s = document.createElement('div');
-        s.className = 'heart';
-        s.textContent = Math.random() < .33 ? '💖' : (Math.random() < .5 ? '💘' : '💕');
-        s.style.left = (Math.random() * area.width) + 'px';
-        s.style.animationDuration = (1.6 + Math.random()*1.6) + 's';
-        s.style.fontSize = (16 + Math.random()*22) + 'px';
-        heartsLayer.appendChild(s);
-        setTimeout(()=>s.remove(), 3600);
-      }
-    }
-
-    function spawnDust(intensity = 1){
-      const r = areaRect();
-      const hb = horse.getBoundingClientRect();
-      const x = (hb.left + hb.width*0.25) - r.left;
-      const y = (hb.top + hb.height*0.80) - r.top;
-      const count = Math.round(1 + intensity);
-
-      for (let i = 0; i < count; i++){
-        const d = document.createElement('div');
-        d.className = 'dust';
-        d.style.left = (x + (Math.random()*16 - 8)) + 'px';
-        d.style.top  = (y + (Math.random()*10 - 5)) + 'px';
-        d.style.width = (8 + Math.random()*10) + 'px';
-        d.style.height = d.style.width;
-        dustLayer.appendChild(d);
-        setTimeout(()=>d.remove(), 800);
-      }
-    }
-
-    // Neigh sound (no audio file)
-    let audioCtx = null;
-    function neigh(){
-      try{
-        audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
-        const now = audioCtx.currentTime;
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = "sawtooth";
-        osc.frequency.setValueAtTime(420, now);
-        osc.frequency.exponentialRampToValueAtTime(740, now + 0.10);
-        osc.frequency.exponentialRampToValueAtTime(360, now + 0.30);
-        gain.gain.setValueAtTime(0.0001, now);
-        gain.gain.exponentialRampToValueAtTime(0.15, now + 0.03);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.32);
-        osc.connect(gain); gain.connect(audioCtx.destination);
-        osc.start(now); osc.stop(now + 0.35);
-      } catch(e){}
-    }
-
-    // Rope attaches behind horse + to No
-    function drawRope(){
-      const h = getCenterPct(horse);
-      const n = getCenterPct(noBtn);
-
-      const vMag = Math.hypot(horseVX, horseVY) || 0.001;
-      const dirX = horseVX / vMag;
-      const dirY = horseVY / vMag;
-
-      // anchor slightly behind the horse (bigger offset for emoji)
-      const rearOffset = 8.8;
-      const hx = h.x - dirX * rearOffset;
-      const hy = h.y - dirY * rearOffset;
-
-      const midX = (hx + n.x) / 2;
-      const midY = (hy + n.y) / 2 + 11;
-
-      ropePath.setAttribute("d", `M ${hx} ${hy} Q ${midX} ${midY} ${n.x} ${n.y}`);
-    }
-
-    let speedBoost = 1;
-
-    function updateSpeedBoostFromPointer(px, py){
-      const r = areaRect();
-      const inside = px >= r.left && px <= r.right && py >= r.top && py <= r.bottom;
-
-      if (!inside) {
-        speedBoost = lerp(speedBoost, 1, 0.08);
-        return;
-      }
-
-      const hb = horse.getBoundingClientRect();
-      const hx = hb.left + hb.width/2;
-      const hy = hb.top  + hb.height/2;
-      const dist = Math.hypot(px - hx, py - hy);
-
-      const target = dist < 180 ? 2.6 : 1.0;
-      speedBoost = lerp(speedBoost, target, 0.12);
-    }
-
-    let rafId = null;
-    let dustTick = 0;
-    let finalHeartsTimer = null;
-
-    function tick(){
-      if (accepted) return;
-
-      horseX += horseVX * speedBoost;
-      horseY += horseVY * speedBoost;
-
-      if (horseX < 0.08 || horseX > 0.92) horseVX *= -1;
-      if (horseY < 0.20 || horseY > 0.88) horseVY *= -1;
-
-      horseX = clamp(horseX, 0.08, 0.92);
-      horseY = clamp(horseY, 0.20, 0.88);
-
-      if (Math.random() < 0.03) horseVX += (Math.random() - 0.5) * 0.0013;
-      if (Math.random() < 0.03) horseVY += (Math.random() - 0.5) * 0.0013;
-      horseVX = clamp(horseVX, -0.0075, 0.0075);
-      horseVY = clamp(horseVY, -0.0075, 0.0075);
-
-      const vMag = Math.hypot(horseVX, horseVY) || 0.001;
-      const dirX = horseVX / vMag;
-      const dirY = horseVY / vMag;
-
-      setElNormPosition(horse, horseX, horseY);
-
-      // No trails behind horse
-      const ropeLen = 0.13 + 0.07 * speedBoost;
-      const targetNoX = clamp(horseX - dirX * ropeLen, 0.08, 0.92);
-      const targetNoY = clamp(horseY - dirY * ropeLen, 0.20, 0.88);
-
-      const stiffness = 0.028;
-      const damping = 0.86;
-
-      const ax = (targetNoX - noX) * stiffness;
-      const ay = (targetNoY - noY) * stiffness;
-
-      noVX = (noVX + ax) * damping;
-      noVY = (noVY + ay) * damping;
-
-      noX += noVX;
-      noY += noVY;
-
-      noX = clamp(noX, 0.10, 0.90);
-      noY = clamp(noY, 0.24, 0.86);
-
-      setElNormPosition(noBtn, noX, noY);
-      drawRope();
-
-      dustTick++;
-      if (speedBoost > 1.4 && dustTick % 10 === 0){
-        spawnDust(speedBoost > 2 ? 2.4 : 1.3);
-      }
-
-      rafId = requestAnimationFrame(tick);
-    }
-
-    function start(){
-      cancelAnimationFrame(rafId);
-
-      horseX = 0.62; horseY = 0.52;
-      noX = 0.56; noY = 0.62;
-      noVX = 0; noVY = 0;
-
-      horseVX = (Math.random() < 0.5 ? -1 : 1) * 0.0034;
-      horseVY = (Math.random() < 0.5 ? -1 : 1) * 0.0028;
-
-      speedBoost = 1;
-      dustTick = 0;
-
-      setElNormPosition(horse, horseX, horseY);
-      setElNormPosition(noBtn, noX, noY);
-      drawRope();
-
-      rafId = requestAnimationFrame(tick);
-    }
-
-    function startFinalHearts(){
-      stopFinalHearts();
-      // continuous heart shower on the final screen
-      finalHeartsTimer = setInterval(() => spawnHearts(10), 300);
-    }
-
-    function stopFinalHearts(){
-      if (finalHeartsTimer) clearInterval(finalHeartsTimer);
-      finalHeartsTimer = null;
-    }
-
-    function yankHorse(){
-      horseVX += (Math.random() < 0.5 ? -1 : 1) * 0.0035;
-      horseVY += (Math.random() < 0.5 ? -1 : 1) * 0.0035;
-      horseVX = clamp(horseVX, -0.010, 0.010);
-      horseVY = clamp(horseVY, -0.010, 0.010);
-
-      speedBoost = 2.8;
-      neigh();
-      spawnDust(3);
-    }
-
-    document.addEventListener('mousemove', (e) => {
-      if (accepted) return;
-      updateSpeedBoostFromPointer(e.clientX, e.clientY);
-    });
-
-    document.addEventListener('touchmove', (e) => {
-      if (accepted) return;
-      if (!e.touches || !e.touches[0]) return;
-      updateSpeedBoostFromPointer(e.touches[0].clientX, e.touches[0].clientY);
-    }, { passive: true });
-
-    noBtn.addEventListener('click', (e) => {
-      if (accepted) return;
-      yankHorse();
-      e.preventDefault();
-      e.stopPropagation();
-    });
-
-    noBtn.addEventListener('touchstart', (e) => {
-      if (accepted) return;
-      yankHorse();
-      e.preventDefault();
-    }, { passive: false });
-
-    yesBtn.addEventListener('click', () => {
-      if (accepted) return;
-      accepted = true;
-
-      result.textContent = "You said YES 😭💖";
-      spawnHearts(30);
-
-      cancelAnimationFrame(rafId);
-
-      noBtn.style.opacity = 0.35;
-      noBtn.style.pointerEvents = 'none';
-      ropePath.setAttribute("stroke", "rgba(0,0,0,.10)");
-      horse.style.opacity = 0.35;
-
-      setTimeout(() => {
-        finalScreen.classList.add('show');
-        spawnHearts(40);
-        startFinalHearts();
-      }, 450);
-    });
-
-    moreHeartsBtn.addEventListener('click', () => spawnHearts(60));
-
-    resetBtn.addEventListener('click', () => {
-      stopFinalHearts();
-      accepted = false;
-      finalScreen.classList.remove('show');
-      result.textContent = "";
-      noBtn.style.opacity = 1;
-      noBtn.style.pointerEvents = 'auto';
-      ropePath.setAttribute("stroke", "rgba(0,0,0,.20)");
-      horse.style.opacity = 1;
-      start();
-    });
-
-    window.addEventListener('resize', () => {
-      if (accepted) return;
-      start();
-    });
-
-    start();
-  </script>
 </body>
 </html>
