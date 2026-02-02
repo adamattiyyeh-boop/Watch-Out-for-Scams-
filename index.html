@@ -28,6 +28,7 @@
   /* MAIN CARD */
   .card{
     width:min(680px, 94vw);
+    height: 500px; /* Added height for better structure */
     border-radius:28px;
     overflow:hidden;
     position:relative;
@@ -35,7 +36,7 @@
     color: var(--cardText);
   }
 
-  /* Background photo (guaranteed visible if file exists) */
+  /* Background photo */
   .bg{
     position:absolute;
     inset:0;
@@ -44,84 +45,65 @@
     object-fit:cover;
     object-position:center;
     transform: scale(1.03);
-    filter: saturate(1.1) contrast(1.05) brightness(.90);
+    filter: saturate(1.1) contrast(1.05) brightness(.70);
+    z-index: 0;
   }
 
-  /* Make text readable but keep photo visible */
   .overlay{
     position:absolute;
     inset:0;
-    background:
-      radial-gradient(circle at 20% 10%, rgba(0,0,0,.20), rgba(0,0,0,.55)),
-      linear-gradient(rgba(0,0,0,.35), rgba(0,0,0,.55));
+    background: radial-gradient(circle, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.6) 100%);
+    z-index: 1;
   }
 
   .content{
     position:relative;
-    padding:28px 26px 24px;
+    z-index: 2;
+    padding:40px 26px;
     text-align:center;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 
   h1{
     margin:0 0 8px;
     font-size: clamp(26px, 4vw, 44px);
-    letter-spacing:-.02em;
-    text-shadow: 0 10px 25px rgba(0,0,0,.40);
-  }
-
-  p{
-    margin:0 0 18px;
-    opacity:.95;
-    text-shadow: 0 10px 25px rgba(0,0,0,.35);
+    text-shadow: 2px 2px 10px rgba(0,0,0,0.8);
   }
 
   .playground{
     position:relative;
-    height:270px;
-    border-radius:18px;
+    height:200px;
+    margin-top: 20px;
   }
 
   /* Buttons */
   .btn{
     border:none;
-    padding:14px 22px;
+    padding:14px 28px;
     border-radius:999px;
-    font-size:16px;
+    font-size:18px;
     font-weight:900;
     cursor:pointer;
-    user-select:none;
-    -webkit-tap-highlight-color: transparent;
-    transition: transform .1s ease, filter .15s ease;
+    position: relative;
+    transition: transform .1s ease;
   }
-  .btn:active{ transform: scale(.96); }
 
   #yes{
     background: var(--yes);
     color:white;
-    box-shadow: 0 12px 30px rgba(255,77,109,.45);
+    box-shadow: 0 10px 20px rgba(255,77,109,0.4);
+    z-index: 10;
   }
-  #yes:hover{ filter: brightness(1.05); }
 
   #no{
     position:absolute;
     background: var(--no);
     color:white;
-    box-shadow: 0 12px 30px rgba(0,0,0,.35);
+    z-index: 5;
   }
-
-  /* If photo fails to load */
-  .photoHint{
-    margin-top:12px;
-    font-size:12px;
-    opacity:.95;
-    display:none;
-    background: rgba(0,0,0,.35);
-    border: 1px solid rgba(255,255,255,.22);
-    padding:10px 12px;
-    border-radius:14px;
-    text-align:left;
-  }
-  .photoHint.show{ display:block; }
 
   /* FINAL SCREEN */
   .final{
@@ -129,116 +111,66 @@
     inset:0;
     display:none;
     place-items:center;
-    background: rgba(0,0,0,.70);
-    backdrop-filter: blur(10px);
-    z-index: 50;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(8px);
+    z-index: 100; /* Below the hearts */
   }
   .final.show{ display:grid; }
 
   .finalCard{
-    width:min(600px, 92vw);
-    background: rgba(255,255,255,.92);
+    width:min(500px, 90vw);
+    background: white;
     color:#111;
     border-radius:22px;
-    padding:26px 20px;
-    box-shadow: var(--shadow);
+    padding:40px;
     text-align:center;
   }
-  .finalCard h2{
-    margin:0 0 10px;
-    font-size: clamp(22px, 3vw, 34px);
-  }
-  .finalCard p{
-    margin:0 0 16px;
-    line-height:1.35;
-    text-shadow:none;
-    opacity:1;
-  }
 
-  .pill{
-    border:none;
-    padding:10px 18px;
-    border-radius:999px;
-    font-weight:900;
-    cursor:pointer;
-    background: #111;
-    color:#fff;
-  }
-  .pill:active{ transform: scale(.97); }
-
-  /* FULLSCREEN HEART RAIN (over EVERYTHING) */
+  /* FULLSCREEN HEART RAIN */
   .heartsFull{
     position:fixed;
     inset:0;
     pointer-events:none;
-    overflow:hidden;
-    z-index: 9999; /* guaranteed above final overlay */
+    z-index: 9999; /* HIGHEST LAYER */
   }
 
   .heart{
     position:absolute;
     top:-80px;
-    opacity:.98;
-    will-change: transform, opacity;
-    filter: drop-shadow(0 18px 22px rgba(0,0,0,.30));
-    animation-name: fallDown, sway;
-    animation-timing-function: linear, ease-in-out;
-    animation-iteration-count: 1, infinite;
+    will-change: transform;
+    animation: fallDown linear forwards;
   }
 
-  /* Fall down */
   @keyframes fallDown{
-    to{
-      transform: translateY(140vh) rotate(40deg);
-      opacity:0;
-    }
-  }
-
-  /* Side-to-side sway */
-  @keyframes sway{
-    0%   { margin-left: -8px; }
-    50%  { margin-left:  10px; }
-    100% { margin-left: -6px; }
+    to { transform: translateY(110vh) rotate(360deg); }
   }
 </style>
 </head>
-
 <body>
 
 <div class="card">
-  <img id="bgImg" class="bg" src="bg.jpg" alt="Background photo">
+  <img id="bgImg" class="bg" src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=1000" alt="Background">
   <div class="overlay"></div>
 
   <div class="content">
     <h1>Will you be my Valentine, Dema? 💘</h1>
-    <p>Try clicking “No”…</p>
+    <p>I know you're gonna try to say no...</p>
 
     <div class="playground" id="playground">
-      <button class="btn" id="yes" type="button">Yes 💞</button>
-      <button class="btn" id="no" type="button">No 🙅‍♀️</button>
-    </div>
-
-    <div id="photoHint" class="photoHint">
-      <b>Photo not loading.</b><br><br>
-      Put your image in the <b>same folder</b> as this HTML and name it <b>bg.jpg</b>.<br>
-      If your file is PNG/JPEG, change the filename in the code too (example: <b>bg.jpeg</b>).
+      <button class="btn" id="yes">Yes 💞</button>
+      <button class="btn" id="no">No 🙅‍♀️</button>
     </div>
   </div>
 </div>
 
-<!-- Final screen -->
 <div class="final" id="final">
   <div class="finalCard">
     <h2>YAYYY DEMAAAA 🥰💖</h2>
-    <p>
-      I love you, dummy. Of course, I was gonna ask you to be my Valentine.
-      I predicted you would say something about me not asking thats why I added that part!
-    </p>
-    <button class="pill" id="again" type="button">🔁 Do it again</button>
+    <p>I love you, dummy. I knew you'd try to click no, so I made it impossible!</p>
+    <button class="btn" id="again" style="background:#111; color:white;">🔁 Do it again</button>
   </div>
 </div>
 
-<!-- Fullscreen hearts layer -->
 <div class="heartsFull" id="heartsFull"></div>
 
 <script>
@@ -249,110 +181,54 @@
   const heartsFull = document.getElementById("heartsFull");
   const againBtn = document.getElementById("again");
 
-  const bgImg = document.getElementById("bgImg");
-  const photoHint = document.getElementById("photoHint");
+  function moveNo() {
+    const pRect = playground.getBoundingClientRect();
+    const bRect = noBtn.getBoundingClientRect();
 
-  let heartsTimer = null;
+    // Calculate max positions so button stays inside the card
+    const maxX = pRect.width - bRect.width;
+    const maxY = pRect.height - bRect.height;
 
-  // Show hint if image fails
-  bgImg.addEventListener("error", () => {
-    photoHint.classList.add("show");
-  });
+    const randomX = Math.floor(Math.random() * maxX);
+    const randomY = Math.floor(Math.random() * maxY);
 
-  function moveNo(){
-    const area = playground.getBoundingClientRect();
-    const btn  = noBtn.getBoundingClientRect();
-
-    const pad = 8;
-    const x = Math.random() * (area.width  - btn.width  - pad*2) + pad;
-    const y = Math.random() * (area.height - btn.height - pad*2) + pad;
-
-    noBtn.style.left = x + "px";
-    noBtn.style.top  = y + "px";
+    noBtn.style.left = randomX + "px";
+    noBtn.style.top = randomY + "px";
   }
 
-  // Initial placement
-  moveNo();
-
-  // Dodge mouse (stronger + faster)
-  playground.addEventListener("mousemove", e => {
-    const b = noBtn.getBoundingClientRect();
-    const dist = Math.hypot(
-      e.clientX - (b.left + b.width/2),
-      e.clientY - (b.top  + b.height/2)
-    );
-
-    if (dist < 140) moveNo();
-  });
-
-  // Also dodge taps/clicks
+  // Move on hover and click
   noBtn.addEventListener("mouseenter", moveNo);
-  noBtn.addEventListener("click", (e)=>{ e.preventDefault(); moveNo(); });
-  noBtn.addEventListener("touchstart", (e)=>{ e.preventDefault(); moveNo(); }, {passive:false});
+  noBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    moveNo();
+  });
 
-  // CRAZY HEART RAIN
-  function spawnHearts(count=25){
-    for (let i=0; i<count; i++){
-      const h = document.createElement("div");
-      h.className = "heart";
-
-      // Different heart emojis for variety
-      const pick = Math.random();
-      h.textContent =
-        pick < 0.25 ? "💖" :
-        pick < 0.50 ? "💘" :
-        pick < 0.75 ? "💕" : "❤️";
-
-      // Spread across screen
-      h.style.left = (Math.random() * 100) + "vw";
-
-      // Size variety
-      const size = 18 + Math.random() * 36; // 18px..54px
-      h.style.fontSize = size + "px";
-
-      // Fall speed variety
-      const fallTime = 2.2 + Math.random() * 3.2; // 2.2s..5.4s
-      h.style.animationDuration = `${fallTime}s, ${0.9 + Math.random()*0.9}s`;
-
-      // Random sway amount + random delay
-      h.style.animationDelay = `0s, ${Math.random()*0.2}s`;
-
-      // Random rotation start (for chaos)
-      h.style.transform = `rotate(${(Math.random()*60 - 30)}deg)`;
-
-      heartsFull.appendChild(h);
-
-      // Remove after it finishes falling
-      setTimeout(() => h.remove(), (fallTime * 1000) + 600);
-    }
+  function spawnHearts() {
+    const heartEmojis = ["💖", "💘", "💕", "❤️", "🌸"];
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.fontSize = (Math.random() * 30 + 20) + "px";
+    heart.style.animationDuration = (Math.random() * 3 + 2) + "s";
+    
+    heartsFull.appendChild(heart);
+    setTimeout(() => heart.remove(), 5000);
   }
 
-  function startHearts(){
-    stopHearts();
-    // instant burst
-    spawnHearts(70);
-
-    // continuous downpour
-    heartsTimer = setInterval(() => {
-      spawnHearts(30);
-    }, 140);
-  }
-
-  function stopHearts(){
-    if (heartsTimer) clearInterval(heartsTimer);
-    heartsTimer = null;
-    heartsFull.innerHTML = "";
-  }
+  let heartInterval;
 
   yesBtn.addEventListener("click", () => {
     finalScreen.classList.add("show");
-    startHearts();
+    heartInterval = setInterval(spawnHearts, 150);
+    // Initial burst
+    for(let i=0; i<20; i++) spawnHearts();
   });
 
   againBtn.addEventListener("click", () => {
-    stopHearts();
     finalScreen.classList.remove("show");
-    moveNo();
+    clearInterval(heartInterval);
+    heartsFull.innerHTML = "";
   });
 </script>
 
