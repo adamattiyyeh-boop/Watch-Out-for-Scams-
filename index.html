@@ -9,8 +9,7 @@
   :root{
     --yes:#ff4d6d;
     --no:#6c757d;
-    --shadow: 0 22px 70px rgba(0,0,0,.45);
-    --cardText: #fff;
+    --rope: #8b4513;
   }
 
   *{box-sizing:border-box}
@@ -20,202 +19,249 @@
     min-height:100vh;
     display:grid;
     place-items:center;
-    font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-    background:#0b0b0b;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    background: radial-gradient(circle, #2b0000 0%, #000000 100%);
     overflow:hidden;
   }
 
-  .card{
-    width:min(680px, 94vw);
-    height: 600px; /* Increased height to fit the portrait photo better */
-    border-radius:28px;
-    overflow:hidden;
-    position:relative;
-    box-shadow: var(--shadow);
-    color: var(--cardText);
+  .card {
+    width: min(600px, 94vw);
+    height: 550px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 30px;
+    border: 1px solid rgba(255,255,255,0.1);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
   }
 
-  .bg{
-    position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    object-position: center 20%; /* Adjusted to focus on the face */
-    filter: brightness(.65) contrast(1.1);
-    z-index: 0;
-  }
-
-  .overlay{
-    position:absolute;
-    inset:0;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.7));
+  /* CUPID ANIMATION */
+  .cupid {
+    font-size: 80px;
+    position: absolute;
+    top: 20px;
+    animation: floatCupid 4s ease-in-out infinite;
     z-index: 1;
   }
 
-  .content{
-    position:relative;
-    z-index: 2;
-    padding:40px 26px;
-    text-align:center;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end; /* Pushes text down so it doesn't cover your face */
-    padding-bottom: 60px;
+  @keyframes floatCupid {
+    0%, 100% { transform: translateY(0) rotate(-5deg); }
+    50% { transform: translateY(20px) rotate(5deg); }
   }
 
   h1 {
-    margin: 0 0 10px;
-    font-size: clamp(24px, 5vw, 38px);
-    text-shadow: 2px 2px 15px rgba(0,0,0,0.9);
+    color: white;
+    font-size: clamp(24px, 5vw, 40px);
+    z-index: 2;
+    text-shadow: 0 0 20px rgba(255, 77, 109, 0.5);
   }
 
-  .playground{
-    position:relative;
-    height:150px;
-    margin-top: 10px;
-  }
-
-  .btn{
-    border:none;
-    padding:14px 32px;
-    border-radius:999px;
-    font-size:18px;
-    font-weight:900;
-    cursor:pointer;
-    transition: transform .1s ease;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-  }
-
-  #yes{ background: var(--yes); color:white; }
-  #no{ position:absolute; background: var(--no); color:white; left: 50%; transform: translateX(-50%); }
-
-  .final{
-    position:fixed;
-    inset:0;
-    display:none;
-    place-items:center;
-    background: rgba(0,0,0,0.75);
-    backdrop-filter: blur(6px);
-    z-index: 100;
-  }
-  .final.show{ display:grid; }
-
-  .finalCard{
-    width:min(450px, 85vw);
-    background: rgba(255, 255, 255, 0.98);
-    color:#111;
-    border-radius:24px;
-    padding:35px;
-    text-align:center;
+  .playground {
+    width: 100%;
+    height: 300px;
     position: relative;
-    z-index: 10001; 
-    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    margin-top: 20px;
   }
 
-  .heartsFull{
-    position:fixed;
-    inset:0;
-    pointer-events:none;
-    z-index: 10000;
+  /* THE HORSE AND ROPE */
+  #horse {
+    position: absolute;
+    font-size: 40px;
+    transition: all 0.5s ease-out;
+    z-index: 3;
+    pointer-events: none;
   }
 
-  .heart{
-    position:absolute;
-    top:-100px;
+  #rope {
+    position: absolute;
+    height: 2px;
+    background: var(--rope);
+    transform-origin: left center;
+    z-index: 2;
+    pointer-events: none;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  }
+
+  .btn {
+    border: none;
+    padding: 12px 30px;
+    border-radius: 999px;
+    font-weight: 900;
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+
+  #yes {
+    background: var(--yes);
+    color: white;
+    font-size: 22px;
+    box-shadow: 0 10px 25px rgba(255, 77, 109, 0.4);
+    position: relative;
+    z-index: 10;
+  }
+
+  #no {
+    position: absolute;
+    background: var(--no);
+    color: white;
+    z-index: 4;
+    white-space: nowrap;
+  }
+
+  /* FINAL SCREEN LAYERED ABOVE HEARTS */
+  .final {
+    position: fixed;
+    inset: 0;
+    display: none;
+    place-items: center;
+    background: rgba(0,0,0,0.85);
+    z-index: 20000; /* Higher than everything */
+  }
+
+  .final.show { display: grid; }
+
+  .finalCard {
+    background: white;
+    padding: 40px;
+    border-radius: 25px;
+    text-align: center;
+    max-width: 400px;
+    box-shadow: 0 0 50px rgba(255, 255, 255, 0.2);
+  }
+
+  /* SMOOTH HEARTS */
+  .heartsContainer {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 10000; /* Behind the final card but in front of main card */
+  }
+
+  .heart {
+    position: absolute;
+    top: -100px;
     will-change: transform;
     animation: smoothFall linear forwards;
   }
 
   @keyframes smoothFall {
-    0% { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 1; }
-    100% { transform: translate3d(0, 110vh, 0) rotate(360deg); opacity: 0; }
+    to { transform: translateY(115vh) rotate(360deg); }
   }
 </style>
 </head>
 <body>
 
 <div class="card">
-  <img id="bgImg" class="bg" src="https://lh3.googleusercontent.com/d/1Xl2F9S7WzXl1l3x1x1x1x1x1x1x1x1x1" alt="Background">
-  <div class="overlay"></div>
-
-  <div class="content">
-    <h1>Will you be my Valentine, Dema? 💘</h1>
-    <div class="playground" id="playground">
-      <button class="btn" id="yes">Yes 💞</button>
-      <button class="btn" id="no">No 🙅‍♀️</button>
-    </div>
+  <div class="cupid">👼💘</div>
+  <h1>Will you be my Valentine, Dema?</h1>
+  
+  <div class="playground" id="playground">
+    <button class="btn" id="yes">Yes 💞</button>
+    
+    <div id="horse">🐎</div>
+    <div id="rope"></div>
+    <button class="btn" id="no">No 🙅‍♀️</button>
   </div>
 </div>
 
 <div class="final" id="final">
   <div class="finalCard">
     <h2>YAYYY DEMAAAA 🥰💖</h2>
-    <p>I love you, dummy. Of course I was gonna ask you! I knew you'd try to click "No" so I made it impossible. 😉</p>
-    <button class="btn" id="again" style="background:#111; color:white; font-size: 14px; padding: 10px 20px;">🔁 Do it again</button>
+    <p>I love you, dummy! Did you really think you could catch that horse?</p>
+    <button class="btn" id="again" style="background:#111; color:white; margin-top:20px;">🔁 Try again</button>
   </div>
 </div>
 
-<div class="heartsFull" id="heartsFull"></div>
+<div class="heartsContainer" id="heartsContainer"></div>
 
 <script>
-  // Note: To make this work instantly with YOUR photo, 
-  // you'll need to upload that photo to a host or keep it in the folder.
-  // For this demo, I've kept the logic ready for you.
-  
-  // TO USE YOUR EXACT PHOTO: 
-  // 1. Save your photo as 'me.jpg' in the same folder as this HTML file.
-  // 2. Change the src of 'bgImg' above to 'me.jpg'.
-
   const noBtn = document.getElementById("no");
+  const horse = document.getElementById("horse");
+  const rope = document.getElementById("rope");
   const playground = document.getElementById("playground");
   const yesBtn = document.getElementById("yes");
   const finalScreen = document.getElementById("final");
-  const heartsFull = document.getElementById("heartsFull");
+  const heartsContainer = document.getElementById("heartsContainer");
   const againBtn = document.getElementById("again");
 
-  function moveNo() {
+  let horseX = 50, horseY = 150;
+  
+  function updateLeash() {
     const pRect = playground.getBoundingClientRect();
-    const bRect = noBtn.getBoundingClientRect();
-    const maxX = pRect.width - bRect.width;
-    const maxY = pRect.height - bRect.height;
-    
-    const randomX = Math.max(10, Math.floor(Math.random() * maxX));
-    const randomY = Math.max(10, Math.floor(Math.random() * maxY));
-    
-    noBtn.style.left = randomX + "px";
-    noBtn.style.top = randomY + "px";
+    const hRect = horse.getBoundingClientRect();
+    const nRect = noBtn.getBoundingClientRect();
+
+    // Position Horse
+    horse.style.left = horseX + "px";
+    horse.style.top = horseY + "px";
+
+    // Position No Button (always trailing the horse)
+    const targetNoX = horseX - 80;
+    const targetNoY = horseY + 20;
+    noBtn.style.left = targetNoX + "px";
+    noBtn.style.top = targetNoY + "px";
+
+    // Draw Rope
+    const x1 = horseX + 10; 
+    const y1 = horseY + 25;
+    const x2 = targetNoX + 20;
+    const y2 = targetNoY + 15;
+
+    const length = Math.sqrt((x2-x1)**2 + (y2-y1)**2);
+    const angle = Math.atan2(y2-y1, x2-x1) * 180 / Math.PI;
+
+    rope.style.width = length + "px";
+    rope.style.left = x1 + "px";
+    rope.style.top = y1 + "px";
+    rope.style.transform = `rotate(${angle}deg)`;
   }
 
-  noBtn.addEventListener("mouseenter", moveNo);
-  noBtn.addEventListener("touchstart", (e) => { e.preventDefault(); moveNo(); });
+  function moveTether() {
+    const pRect = playground.getBoundingClientRect();
+    horseX = Math.random() * (pRect.width - 150) + 100;
+    horseY = Math.random() * (pRect.height - 100) + 50;
+    updateLeash();
+  }
+
+  // Horse dodges mouse
+  playground.addEventListener("mousemove", (e) => {
+    const hRect = horse.getBoundingClientRect();
+    const dist = Math.hypot(e.clientX - hRect.left, e.clientY - hRect.top);
+    if (dist < 120) moveTether();
+  });
+
+  // Initial setup
+  updateLeash();
 
   function spawnHearts() {
-    const heartEmojis = ["💖", "💘", "💕", "❤️"];
     const heart = document.createElement("div");
     heart.className = "heart";
-    heart.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+    heart.textContent = ["💖", "💕", "❤️", "💘"][Math.floor(Math.random()*4)];
     heart.style.left = Math.random() * 100 + "vw";
     heart.style.fontSize = (Math.random() * 20 + 20) + "px";
-    heart.style.animationDuration = (Math.random() * 3 + 4) + "s";
-    
-    heartsFull.appendChild(heart);
-    setTimeout(() => heart.remove(), 7000);
+    heart.style.animationDuration = (Math.random() * 3 + 5) + "s"; // 5-8 seconds for smoothness
+    heartsContainer.appendChild(heart);
+    setTimeout(() => heart.remove(), 8000);
   }
 
   let heartInterval;
-
   yesBtn.addEventListener("click", () => {
     finalScreen.classList.add("show");
-    heartInterval = setInterval(spawnHearts, 250);
-    for(let i=0; i<10; i++) spawnHearts();
+    heartInterval = setInterval(spawnHearts, 300);
+    for(let i=0; i<15; i++) spawnHearts();
   });
 
   againBtn.addEventListener("click", () => {
     finalScreen.classList.remove("show");
     clearInterval(heartInterval);
-    heartsFull.innerHTML = "";
+    heartsContainer.innerHTML = "";
+    moveTether();
   });
 </script>
 
